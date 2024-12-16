@@ -1,0 +1,10 @@
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\bin\Debug\NEA Procedural World Generator.exe.config
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\bin\Debug\NEA Procedural World Generator.exe
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\bin\Debug\NEA Procedural World Generator.pdb
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA Procedural World Generator.csprojAssemblyReference.cache
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.Properties.Resources.resources
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA Procedural World Generator.csproj.GenerateResource.cache
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA Procedural World Generator.csproj.CoreCompileInputs.cache
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA Procedural World Generator.exe
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA Procedural World Generator.pdb
+C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.Form1.resources
