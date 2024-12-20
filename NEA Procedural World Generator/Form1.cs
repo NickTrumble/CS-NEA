@@ -19,7 +19,7 @@ namespace NEA_Procedural_World_Generator
         public Form1()
         {
             InitializeComponent();
-            world = new World(32);
+            world = new World(32, 4, 0.5f, 0.008f);
             UI = new InterfaceHandler(this);
         }
     }

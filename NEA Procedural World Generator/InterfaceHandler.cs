@@ -8,15 +8,24 @@ namespace NEA_Procedural_World_Generator
     //class to handle all aspects of the interface generation
     public class InterfaceHandler
     {
+        //custom cmaps
+        //simplex
+        //editing world
+
         //public variables
+        public enum NoiseState { Perlin, Simplex }
+        public static NoiseState NoiseMethodd = NoiseState.Perlin;
+
         public PictureBox MenuBox;
         public PictureBox TerrainBox;
-        public NumericUpDown WorldSizeNUD;
-        public Button PerlinGen;
+        public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD;
+        public Button PerlinGen, SimplexGen;
+        public Label MousePosLabel;
 
         //private variables
         private Form1 Form;
-        private Button StartButton;
+        private Button StartButton, CmapButton;
+        
 
         private int width;
         private int height;
@@ -77,15 +86,34 @@ namespace NEA_Procedural_World_Generator
             TerrainBox.Controls.Add(StartButton);
 
             //BUTTONS//
-            //regenerate
-            PerlinGen = ButtonCreator(PerlinWorldGen, new Point(0, MenuBox.Height - 30),
-                "Perlin Generation", new Size(100, 30));
+            //regenerate perlin
+            PerlinGen = ButtonCreator(PerlinButtonClick, new Point(0, MenuBox.Height - 25),
+                "Perlin Generation", new Size(100, 25));
 
-            //SLIDERS//
+            //regenerate simplex
+            SimplexGen = ButtonCreator(SimplexButtonClick, new Point(0, MenuBox.Height - 50),
+                "Simplex Generation", new Size(100, 25));
+
+
+            //SLIDERS AND LABELS//
+            //mouse pos
+            MousePosLabel = LabelCreator(new Point(0, 5), "[0, 0] = 0.0");
+
             //world sizez
-            WorldSizeNUD = SliderCreator(new Point(60, 5), 24, 256, 0, 32, 1);
-            LabelCreator(new Point(0, 5), "World Size:");
+            WorldSizeNUD = SliderCreator(new Point(60, 30), 24, 256, 0, 32, 1);
+            LabelCreator(new Point(0, 30), "World Size:");
 
+            //Scale
+            ScaleNUD = SliderCreator(new Point(60, 55), 1f, 16f, 0, 8f, 1);
+            LabelCreator(new Point(0, 55), "Scale:");
+
+            //Octaves
+            OctavesNUD = SliderCreator(new Point(60, 80), 1f, 10f, 0, 4, 1);
+            LabelCreator(new Point(0, 80), "Octaves:");
+
+            //Persistance
+            PersistanceNUD = SliderCreator(new Point(60, 105), 0.1f, 2f, 1, 0.5f, 0.1f);
+            LabelCreator(new Point(0, 105), "Persistance:");
 
         }
 
@@ -133,9 +161,17 @@ namespace NEA_Procedural_World_Generator
             return nud;
         }
 
-        private void PerlinWorldGen(object sender, EventArgs e)
+        private void PerlinButtonClick(object sender, EventArgs e)
         {
-            Form1.world = new World((int)(WorldSizeNUD.Value));
+            NoiseMethodd = NoiseState.Perlin;
+            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (int)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
+            Form1.world.WorldGeneration();
+        }
+
+        private void SimplexButtonClick(object sender, EventArgs e)
+        {
+            NoiseMethodd = NoiseState.Simplex;
+            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (int)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
             Form1.world.WorldGeneration();
         }
 
@@ -180,6 +216,15 @@ namespace NEA_Procedural_World_Generator
                 TerrainBox.Invalidate();
                 lastPos = Pos;
             }
+            if (!TerrainBox.Controls.Contains(StartButton))
+            {
+                int mousex = Math.Min(1024, (int)(e.Location.X + (Form1.xoff * World.chunkSize)));
+                int mouseu = Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), 1024);
+                float elevation = Form1.world.WorldChunks[(mousex / World.chunkSize, mouseu / World.chunkSize)].ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize,
+                    mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
+                MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
+            }
+
 
         }
 

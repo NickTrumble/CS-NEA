@@ -10,9 +10,11 @@ namespace NEA_Procedural_World_Generator
         //public variables
         public Dictionary<(int x, int y), Chunk> WorldChunks;
         public Dictionary<(int x, int y), Chunk> InhabitedChunks;
-        public int Size;
-        public PerlinNoise Noise;
+        public int Size, Octaves;
+        public BaseNoise Noise;
         public static int chunkSize = 32;
+        public float Persistance, Scale;
+
 
         public static Color[] BlockRGB = new Color[5]
         {
@@ -23,12 +25,22 @@ namespace NEA_Procedural_World_Generator
 
         //private variables
 
-        public World(int size)
+        public World(int size, int octaves, float pers, float scale)
         {
             Size = size;
             WorldChunks = new Dictionary<(int x, int y), Chunk>();
             InhabitedChunks = new Dictionary<(int x, int y), Chunk>();
-            Noise = new PerlinNoise(size * chunkSize, 4, 0.5f);
+            if (InterfaceHandler.NoiseMethodd == InterfaceHandler.NoiseState.Perlin)
+            {
+                Noise = new PerlinNoise(size * chunkSize, octaves, pers);
+            } else
+            {
+                Noise = new SimplexNoise(size * chunkSize, octaves, pers);
+            }
+            
+            Persistance = pers;
+            Octaves = octaves;
+            Scale = scale;
         }
 
         //gives a block a block state through biome and height
@@ -100,9 +112,9 @@ namespace NEA_Procedural_World_Generator
             Bmp = new Bitmap(World.chunkSize, World.chunkSize);
         }
 
-        public static Chunk ChunkGeneration(Chunk chunk)
+        public static Chunk ChunkGeneration(Chunk chunk) 
         {
-            float freq = 0.005f;
+            float freq = Form1.world.Scale;
             for (int i = 0; i < World.chunkSize; i++)
             {
                 for (int j = 0; j < World.chunkSize; j++)
@@ -110,6 +122,7 @@ namespace NEA_Procedural_World_Generator
 
                     float noisevalue = Math.Min(1, 0.5f + Form1.world.Noise.Noise_method((chunk.X * World.chunkSize + i) * freq, (chunk.Y * World.chunkSize + j) * freq));
                     chunk.ChunkBlock[(i, j)] = new Block(i, j);
+                    chunk.ChunkBlock[(i, j)].Z = noisevalue;
 
                     Block.BlockState state = Form1.world.BlockStateTransformer(chunk.ChunkBlock[(i, j)], noisevalue);
                     chunk.ChunkBlock[(i, j)].BlockType = state;
@@ -145,6 +158,7 @@ namespace NEA_Procedural_World_Generator
 
         public int X;
         public int Y;
+        public float Z;
         //private variables
 
         public Block(int x, int y)
