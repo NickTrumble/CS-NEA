@@ -164,14 +164,14 @@ namespace NEA_Procedural_World_Generator
         private void PerlinButtonClick(object sender, EventArgs e)
         {
             NoiseMethodd = NoiseState.Perlin;
-            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (int)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
+            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
             Form1.world.WorldGeneration();
         }
 
         private void SimplexButtonClick(object sender, EventArgs e)
         {
             NoiseMethodd = NoiseState.Simplex;
-            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (int)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
+            Form1.world = new World((int)(WorldSizeNUD.Value), (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
             Form1.world.WorldGeneration();
         }
 
@@ -218,8 +218,8 @@ namespace NEA_Procedural_World_Generator
             }
             if (!TerrainBox.Controls.Contains(StartButton))
             {
-                int mousex = Math.Min(1024, (int)(e.Location.X + (Form1.xoff * World.chunkSize)));
-                int mouseu = Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), 1024);
+                int mousex = Math.Min(1023, (int)(e.Location.X + (Form1.xoff * World.chunkSize)));
+                int mouseu = Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), 1023);
                 float elevation = Form1.world.WorldChunks[(mousex / World.chunkSize, mouseu / World.chunkSize)].ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize,
                     mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
                 MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
