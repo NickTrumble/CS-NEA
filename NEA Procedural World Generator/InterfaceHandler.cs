@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,28 +10,30 @@ namespace NEA_Procedural_World_Generator
     public class InterfaceHandler
     {
         //custom cmaps
-        //simplex
-        //editing world
+        //mesh
+        //redo/undo
 
         //public variables
         public enum NoiseState { Perlin, Simplex }
+        public enum MouseState { Editing, Moving }
+        public static MouseState MouseMode = MouseState.Editing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
 
-        public PictureBox MenuBox;
-        public PictureBox TerrainBox;
+        public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD;
-        public Button PerlinGen, SimplexGen;
+        public Button PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
+            UndoButton, RedoButton;
         public Label MousePosLabel;
 
         //private variables
         private Form1 Form;
-        private Button StartButton, CmapButton;
+        private Button StartButton;
         
 
         private int width;
         private int height;
         private PointF lastPos;
-
+        private float intensity;
 
         private enum DraggingState { None, Dragging }
         private DraggingState Drag = DraggingState.None;
@@ -92,8 +95,20 @@ namespace NEA_Procedural_World_Generator
 
             //regenerate simplex
             SimplexGen = ButtonCreator(SimplexButtonClick, new Point(0, MenuBox.Height - 50),
-                "Simplex Generation", new Size(100, 25));
+                "Simplex Gen", new Size(100, 25));
 
+            //mouse mode switch
+            MouseModeButton = ButtonCreator(MouseModeButtonClick, new Point(0, MenuBox.Height - 75),
+                "🖌", new Size(100, 25));
+            MouseModeButton.Font = new Font("Arial", 12);
+
+            //undo button
+            UndoButton = ButtonCreator(UndoButtonClick, new Point(0, MenuBox.Height - 100),
+                "Undo", new Size(50, 25));
+
+            //redo button
+            RedoButton = ButtonCreator(RedoButtonClick, new Point(50, MenuBox.Height - 100),
+                "Redo", new Size(50, 25));
 
             //SLIDERS AND LABELS//
             //mouse pos
@@ -161,6 +176,52 @@ namespace NEA_Procedural_World_Generator
             return nud;
         }
 
+        private void UndoButtonClick(object sender, EventArgs e)
+        {
+            if (Form1.world.UndoStack.Count > 0)
+            {
+                List<Chunk> chunks = new List<Chunk>();
+                Form1.world.RedoStack.Push(Form1.world.WorldChunks.Values.ToList());
+                foreach (Chunk c in Form1.world.UndoStack.Pop())
+                {
+                    chunks.Add(c);
+                    Form1.world.WorldChunks[(c.X, c.Y)] = c;
+                }
+                Form1.world.temp = chunks;
+                TerrainBox.Invalidate();
+            }
+        }
+
+        private void RedoButtonClick(object sender, EventArgs e)
+        {
+            if (Form1.world.RedoStack.Count > 0)
+            {
+                List<Chunk> chunks = new List<Chunk>(); ;
+                foreach (Chunk c in Form1.world.RedoStack.Pop())
+                {
+                    chunks.Add(c);
+                    Form1.world.WorldChunks[(c.X, c.Y)] = c;
+                }
+                Form1.world.UndoStack.Push(chunks);
+                TerrainBox.Invalidate();
+            }
+        }
+
+        private void MouseModeButtonClick(object sender, EventArgs e)
+        {
+            if (MouseMode == MouseState.Editing)
+            {
+                MouseMode = MouseState.Moving;
+                MouseModeButton.Text = "✋";
+            }
+            else
+            {
+                MouseMode = MouseState.Editing;
+                MouseModeButton.Text = "🖌";
+            }
+
+        }
+
         private void PerlinButtonClick(object sender, EventArgs e)
         {
             NoiseMethodd = NoiseState.Perlin;
@@ -192,34 +253,50 @@ namespace NEA_Procedural_World_Generator
 
         private void TerrainBoxMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            //check if in move mode or edit
+            if (MouseMode == MouseState.Editing)
             {
-                lastPos = e.Location;
-                Drag = DraggingState.Dragging;
-                TerrainBox.Cursor = Cursors.Hand;
-
+                //if edit mode, :
+                intensity = (e.Button == MouseButtons.Left) ? 0.01f : -0.01f;
+                Form1.world.EditWorld(e.Location.X, e.Location.Y, 30, intensity);
+                TerrainBox.Invalidate();
+            } else
+            {
+                //if move mode, : 
+                    lastPos = e.Location;           
+                    TerrainBox.Cursor = Cursors.Hand;
             }
+            Drag = DraggingState.Dragging;
         }
 
         private void TerrainBoxMouseMove(object sender, MouseEventArgs e)
         {
             if (Drag == DraggingState.Dragging)
             {
-                PointF Pos = e.Location;
-                Form1.xoff -= (Pos.X - lastPos.X) / World.chunkSize;
-                Form1.yoff -= (Pos.Y - lastPos.Y) / World.chunkSize;
-                if (Form1.xoff < 0) Form1.xoff = 0;
-                if (Form1.yoff < 0) Form1.yoff = 0;
+                if (MouseMode == MouseState.Moving)
+                {
+                    PointF Pos = e.Location;
+                    Form1.xoff -= (Pos.X - lastPos.X) / World.chunkSize;
+                    Form1.yoff -= (Pos.Y - lastPos.Y) / World.chunkSize;
+                    if (Form1.xoff < 0) Form1.xoff = 0;
+                    if (Form1.yoff < 0) Form1.yoff = 0;
 
-                if (Form1.xoff > Form1.world.Size - TerrainBox.Width / 32f) Form1.xoff = Form1.world.Size - TerrainBox.Width / 32f;
-                if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
-                TerrainBox.Invalidate();
-                lastPos = Pos;
+                    if (Form1.xoff > Form1.world.Size - TerrainBox.Width / 32f) Form1.xoff = Form1.world.Size - TerrainBox.Width / 32f;
+                    if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
+                    TerrainBox.Invalidate();
+                    lastPos = Pos;
+                } else
+                {
+                    Form1.world.EditWorld(e.Location.X, e.Location.Y, 30, intensity);
+                    TerrainBox.Invalidate();
+                }
+                
             }
             if (!TerrainBox.Controls.Contains(StartButton))
             {
-                int mousex = Math.Min(1023, (int)(e.Location.X + (Form1.xoff * World.chunkSize)));
-                int mouseu = Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), 1023);
+                int size = Form1.world.Size;
+                int mousex = Math.Max(0, Math.Min(size * World.chunkSize, (int)(e.Location.X + (Form1.xoff * World.chunkSize))));
+                int mouseu = Math.Max(0, Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), size * World.chunkSize));
                 float elevation = Form1.world.WorldChunks[(mousex / World.chunkSize, mouseu / World.chunkSize)].ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize,
                     mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
                 MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
@@ -232,6 +309,9 @@ namespace NEA_Procedural_World_Generator
         {
             Drag = DraggingState.None;
             TerrainBox.Cursor = Cursors.Default;
+            Form1.world.UndoStack.Push(Form1.world.temp);
+            Form1.world.temp.Clear();
+            Form1.world.temp.AddRange(Form1.world.WorldChunks.Values.ToList());
         }
 
         public void PopulateTerrainBox(object sender, PaintEventArgs e)
@@ -249,8 +329,12 @@ namespace NEA_Procedural_World_Generator
                     {
                         int indexi = i % Form1.world.Size;
                         int indexj = j % Form1.world.Size;
-                        e.Graphics.DrawImage(Form1.world.WorldChunks[(indexi, indexj)].Bmp,
-                            new PointF(World.chunkSize * (i - Form1.xoff), World.chunkSize * (j - Form1.yoff)));
+                        Bitmap bmp = Form1.world.WorldChunks[(indexi, indexj)].Bmp;
+                        lock (bmp)
+                        {
+                            e.Graphics.DrawImage(bmp, new PointF(World.chunkSize * (i - Form1.xoff), World.chunkSize * (j - Form1.yoff)));
+                        }
+
                     }
                 }
 
