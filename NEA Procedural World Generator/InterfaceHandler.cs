@@ -178,32 +178,30 @@ namespace NEA_Procedural_World_Generator
 
         private void UndoButtonClick(object sender, EventArgs e)
         {
-            if (Form1.world.UndoStack.Count > 0)
+            if (Form1.world.UndoStack.Count > 0)//check count
             {
-                List<Chunk> chunks = new List<Chunk>();
-                Form1.world.RedoStack.Push(Form1.world.WorldChunks.Values.ToList());
-                foreach (Chunk c in Form1.world.UndoStack.Pop())
+                Form1.world.RedoStack.Push(World.CloneWorld(Form1.world.WorldChunks.Values.ToList()));//redo stack.push -> current world.clone
+                foreach(Chunk c in Form1.world.UndoStack.Pop())
                 {
-                    chunks.Add(c);
-                    Form1.world.WorldChunks[(c.X, c.Y)] = c;
+                    Form1.world.WorldChunks[(c.X, c.Y)] = c;//current world -> undo stack,pop
                 }
-                Form1.world.temp = chunks;
-                TerrainBox.Invalidate();
+                Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList());
+
+                TerrainBox.Invalidate(); //redraw
             }
         }
 
-        private void RedoButtonClick(object sender, EventArgs e)
+        private void RedoButtonClick(object sender, EventArgs e)//
         {
-            if (Form1.world.RedoStack.Count > 0)
+            if (Form1.world.RedoStack.Count > 0)//check count
             {
-                List<Chunk> chunks = new List<Chunk>(); ;
-                foreach (Chunk c in Form1.world.RedoStack.Pop())
+                Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.WorldChunks.Values.ToList()));//undo stack.push -> current.world.clone
+                foreach(Chunk c in Form1.world.RedoStack.Pop())
                 {
-                    chunks.Add(c);
-                    Form1.world.WorldChunks[(c.X, c.Y)] = c;
+                    Form1.world.WorldChunks[(c.X, c.Y)] = c;//current world -> redo stack.pop
                 }
-                Form1.world.UndoStack.Push(chunks);
-                TerrainBox.Invalidate();
+
+                TerrainBox.Invalidate();//redraw
             }
         }
 
@@ -309,9 +307,9 @@ namespace NEA_Procedural_World_Generator
         {
             Drag = DraggingState.None;
             TerrainBox.Cursor = Cursors.Default;
-            Form1.world.UndoStack.Push(Form1.world.temp);
-            Form1.world.temp.Clear();
-            Form1.world.temp.AddRange(Form1.world.WorldChunks.Values.ToList());
+
+            Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
+            Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
         }
 
         public void PopulateTerrainBox(object sender, PaintEventArgs e)

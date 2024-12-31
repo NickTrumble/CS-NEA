@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace NEA_Procedural_World_Generator
 {
@@ -90,12 +91,12 @@ namespace NEA_Procedural_World_Generator
                 for (int j = 0; j < Form1.world.Size; j++)
                 {
                     Chunk c = Chunk.ChunkGeneration(new Chunk(i, j));
-                    Form1.world.WorldChunks[(i, j)] = c;
+                    WorldChunks[(i, j)] = c;
                     chunks.Add(c);
                 }
 
             }
-            UndoStack.Push(Form1.world.WorldChunks.Values.ToList());
+            temp = CloneWorld(WorldChunks.Values.ToList());
             Form1.UI.TerrainBox.Invalidate();
         }
 
@@ -159,10 +160,20 @@ namespace NEA_Procedural_World_Generator
             
         }
 
+        public static List<Chunk> CloneWorld(List<Chunk> world)
+        {
+            List<Chunk> Cloned = new List<Chunk>();
+            foreach(Chunk c in world)
+            {
+                Cloned.Add((Chunk)((ICloneable)c).Clone());
+            }
+            return Cloned;
+        }
+
     }
 
     //class to handle chunks of the world to generate easier
-    public class Chunk
+    public class Chunk : ICloneable
     {
         //public variables
         public Dictionary<(int x, int y), Block> ChunkBlock;
@@ -212,10 +223,22 @@ namespace NEA_Procedural_World_Generator
             return chunk;
 
         }
+
+        object ICloneable.Clone()
+        {
+            Chunk chunk = new Chunk(X, Y);
+            chunk.Bmp = new Bitmap(this.Bmp);
+            foreach(var block in ChunkBlock)
+            {
+                chunk.ChunkBlock[block.Key] = (Block)block.Value.Clone();
+            }
+            return chunk;
+        }
+
     }
 
     //class to handle all block properties
-    public class Block
+    public class Block : ICloneable
     {
         //public variables
         //enums
@@ -237,6 +260,19 @@ namespace NEA_Procedural_World_Generator
             X = x;
             Y = y;
         }
+
+        public object Clone()
+        {
+            return new Block(X, Y)
+            {
+                Z = this.Z,
+                BlockType = this.BlockType,
+                Biome = this.Biome
+            };
+        }
+
+        
     }
+
 
 }
