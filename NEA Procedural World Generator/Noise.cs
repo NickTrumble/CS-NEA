@@ -12,6 +12,10 @@ namespace NEA_Procedural_World_Generator
         //smoothens transitions between gradient vectors
         static float Fade_function(float f) => f * f * f * (f * (f * 6 - 15) + 10);//blend
 
+        // linear interpolation between a and b, with interpolation value = t
+        public static float Lerp_function(float f, float a, float b) => a + f * (b - a);//interpolation
+
+
         //generates a single octave of the perlin noise to be combined into multiple
         public override float Single_octave(float x, float y)
         {
@@ -107,7 +111,7 @@ namespace NEA_Procedural_World_Generator
     public class BaseNoise
     {
         public static int[] Ptable { get; set; }
-        public static int Num_samples { get; set; }
+        public static int Num_samples { get; set; }//size
         public static int octaves { get; set; }
         public static float persistance { get; set; }
 
@@ -151,10 +155,6 @@ namespace NEA_Procedural_World_Generator
         }
 
         public virtual float Single_octave(float x, float y) { return 0f; }
-
-
-        // linear interpolation between a and b, with interpolation value = t
-        public static float Lerp_function(float f, float a, float b) => a + f * (b - a);//interpolation
 
         //faster version of Math.floor
         public static int fastfloor(float x) => (x >= 0) ? (int)x : (int)(x - 1);

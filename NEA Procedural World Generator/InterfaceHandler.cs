@@ -11,7 +11,10 @@ namespace NEA_Procedural_World_Generator
     {
         //custom cmaps
         //mesh
-        //redo/undo
+        //mass optimisation
+        //save button/form
+        //brush radius
+
 
         //public variables
         public enum NoiseState { Perlin, Simplex }
@@ -20,7 +23,7 @@ namespace NEA_Procedural_World_Generator
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
 
         public PictureBox MenuBox, TerrainBox;
-        public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD;
+        public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
         public Button PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
             UndoButton, RedoButton;
         public Label MousePosLabel;
@@ -129,6 +132,10 @@ namespace NEA_Procedural_World_Generator
             //Persistance
             PersistanceNUD = SliderCreator(new Point(60, 105), 0.1f, 2f, 1, 0.5f, 0.1f);
             LabelCreator(new Point(0, 105), "Persistance:");
+
+            //Colour num 
+            ColourNumNUD = SliderCreator(new Point(60, 130), 4, 50, 0, 4, 1);
+            LabelCreator(new Point(0, 130), "Num. of Colours:");
 
         }
 
@@ -305,11 +312,16 @@ namespace NEA_Procedural_World_Generator
 
         private void TerrainBoxMouseUp(object sender, MouseEventArgs e)
         {
+            if (MouseMode == MouseState.Editing)
+            {
+                Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
+                Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
+            }
+            
             Drag = DraggingState.None;
             TerrainBox.Cursor = Cursors.Default;
 
-            Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
-            Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
+            
         }
 
         public void PopulateTerrainBox(object sender, PaintEventArgs e)

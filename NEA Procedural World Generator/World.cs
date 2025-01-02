@@ -22,10 +22,16 @@ namespace NEA_Procedural_World_Generator
 
         public static Color[] BlockRGB = new Color[5]
         {
-            Color.FromArgb(59, 107, 161), Color.FromArgb(232, 235, 56),
-            Color.FromArgb(39, 99, 21), Color.FromArgb(88, 57, 39), 
-            Color.FromArgb(98, 100, 102)
+            Color.FromArgb(59, 107, 161),
+            Color.FromArgb(85, 145, 79),
+            Color.FromArgb(139, 107, 79),
+            Color.FromArgb(152, 161, 138),
+            Color.FromArgb(211, 213, 216)
         };
+
+        //Color.FromArgb(59, 107, 161), Color.FromArgb(232, 235, 56),
+        //    Color.FromArgb(39, 99, 21), Color.FromArgb(88, 57, 39), 
+        //    Color.FromArgb(98, 100, 102)
 
         //private variables
 
@@ -56,13 +62,17 @@ namespace NEA_Procedural_World_Generator
             {
                 return Block.BlockState.Water;
             }
-            else if (val < 0.4)
+            else if (val < 0.6)
             {
                 return Block.BlockState.Sand;
             }
-            else if (val < 0.8)
+            else if (val < 0.75)
             {
                 return Block.BlockState.Grass;
+            }
+            else if (val < 0.9)
+            {
+                return Block.BlockState.Dirt;
             }
             else
             {
@@ -100,15 +110,6 @@ namespace NEA_Procedural_World_Generator
             Form1.UI.TerrainBox.Invalidate();
         }
 
-        public (float elevation, int X, int Y) AddPixel(int x, int y, float val)
-        {
-            int X = Math.Min((int)(x / chunkSize + (Form1.xoff)), Size - 1);//X = chunkx, x = mousex
-            int Y = Math.Min((int)(y / chunkSize + (Form1.yoff)), Size - 1);//Y = chunky, y = mousey
-            Form1.world.WorldChunks[(X, Y)].ChunkBlock[(x - X * chunkSize, y - Y * chunkSize)].Z += val;
-
-            return (Form1.world.WorldChunks[(X, Y)].ChunkBlock[(x - X * chunkSize, y - Y * chunkSize)].Z, X, Y);
-        }
-
         public void EditWorld(int x, int y, int radius, float intensity)
         {
             int offsetx = (int)(Form1.xoff * chunkSize);
@@ -118,7 +119,7 @@ namespace NEA_Procedural_World_Generator
             int ymin = Math.Max(0, y - radius + offsety);
 
             int xmax = Math.Min(chunkSize * Size, x + radius + offsetx);
-            int ymax = Math.Max(chunkSize * Size, y + radius + offsety);
+            int ymax = Math.Min(chunkSize * Size, y + radius + offsety);
 
             int radius2 = radius * radius;
             Parallel.For(xmin, xmax, i =>
