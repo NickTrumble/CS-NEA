@@ -32,7 +32,6 @@ namespace NEA_Procedural_World_Generator
         private Form1 Form;
         private Button StartButton;
         
-
         private int width;
         private int height;
         private PointF lastPos;
