@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,11 +8,13 @@ namespace NEA_Procedural_World_Generator
     //class to handle all aspects of the interface generation
     public class InterfaceHandler
     {
-        //custom cmaps
+        //custom cmaps / colour blind
         //mesh
         //mass optimisation
-        //save button/form
-        //brush radius
+        //save button/for
+        //manual
+        //loading bar/symbol
+        //terracingh
 
 
         //public variables
@@ -25,17 +26,19 @@ namespace NEA_Procedural_World_Generator
         public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
         public Button PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
-            UndoButton, RedoButton;
+            UndoButton, RedoButton, SaveButton;
         public Label MousePosLabel;
 
         //private variables
         private Form1 Form;
         private Button StartButton;
+        private Label RadiusLabel, IntensityLabel;
         
         private int width;
         private int height;
         private PointF lastPos;
-        private float intensity;
+        private float intensity = 0.01f;
+        private int radius = 30;
 
         private enum DraggingState { None, Dragging }
         private DraggingState Drag = DraggingState.None;
@@ -77,6 +80,7 @@ namespace NEA_Procedural_World_Generator
             TerrainBox.MouseMove += TerrainBoxMouseMove;
             TerrainBox.MouseUp += TerrainBoxMouseUp;
             TerrainBox.Paint += PopulateTerrainBox;
+            TerrainBox.MouseWheel += BrushEditor;
 
             Form.Controls.Add(TerrainBox);
             //generates first world
@@ -99,18 +103,25 @@ namespace NEA_Procedural_World_Generator
             SimplexGen = ButtonCreator(SimplexButtonClick, new Point(0, MenuBox.Height - 50),
                 "Simplex Gen", new Size(100, 25));
 
-            //mouse mode switch
-            MouseModeButton = ButtonCreator(MouseModeButtonClick, new Point(0, MenuBox.Height - 75),
-                "🖌", new Size(100, 25));
-            MouseModeButton.Font = new Font("Arial", 12);
-
             //undo button
-            UndoButton = ButtonCreator(UndoButtonClick, new Point(0, MenuBox.Height - 100),
+            UndoButton = ButtonCreator(UndoButtonClick, new Point(0, MenuBox.Height - 75),
                 "Undo", new Size(50, 25));
 
             //redo button
-            RedoButton = ButtonCreator(RedoButtonClick, new Point(50, MenuBox.Height - 100),
+            RedoButton = ButtonCreator(RedoButtonClick, new Point(50, MenuBox.Height - 75),
                 "Redo", new Size(50, 25));
+
+            //mouse mode switch
+            MouseModeButton = ButtonCreator(MouseModeButtonClick, new Point(0, MenuBox.Height - 100),
+                "🖌", new Size(100, 25));
+            MouseModeButton.Font = new Font("Arial", 12);
+            IntensityLabel = LabelCreator(new Point(0, MenuBox.Height - 120), $"Brush Intensity:{intensity * 100f}");
+            RadiusLabel = LabelCreator(new Point(0, MenuBox.Height - 140), $"Brush Radius:{radius}");
+
+            //save button
+            SaveButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 165),
+                "Save Terrain", new Size(100, 25));
+
 
             //SLIDERS AND LABELS//
             //mouse pos
@@ -132,9 +143,9 @@ namespace NEA_Procedural_World_Generator
             PersistanceNUD = SliderCreator(new Point(60, 105), 0.1f, 2f, 1, 0.5f, 0.1f);
             LabelCreator(new Point(0, 105), "Persistance:");
 
-            //Colour num 
+            //Colour num //finish
             ColourNumNUD = SliderCreator(new Point(60, 130), 4, 50, 0, 4, 1);
-            LabelCreator(new Point(0, 130), "Num. of Colours:");
+            LabelCreator(new Point(0, 130), "Terraces:");
 
         }
 
@@ -180,6 +191,65 @@ namespace NEA_Procedural_World_Generator
             nud.Controls[0].Visible = false;
             MenuBox.Controls.Add(nud);
             return nud;
+        }
+
+        public void SaveButtonClick(object sender, EventArgs e)
+        {
+            OBJExport exporter = new OBJExport(Form1.world, 0.015f);
+            DialogResult result = MessageBox.Show(
+                "Would you like to Save the whole Map?",
+                "Save Terrain As...", MessageBoxButtons.YesNoCancel);
+            FolderBrowserDialog filelocation = new FolderBrowserDialog
+            {
+                Description = "Save Terrain at...",
+                SelectedPath = "C:\\Users\\iantr\\source\\repos\\NEA Procedural World Generator\\NEA Procedural World Generator"
+            };
+            if (filelocation.ShowDialog() == DialogResult.OK)
+            {
+                if (result == DialogResult.Yes)
+                {
+
+                    exporter.SaveAll(filelocation.SelectedPath);
+                }
+                else//choose chunks
+                {
+
+                }
+            }
+
+
+        }
+
+        private void UpdateLabels()
+        {
+            IntensityLabel.Text = $"Brush Intensity:{(int)(intensity * 100f)}";
+            RadiusLabel.Text = $"Brush Radius:{radius}";
+        }
+
+        private void BrushEditor(object sender, MouseEventArgs e)
+        {
+           if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            {
+                if (e.Delta < 0)
+                {
+                    intensity += 0.01f;
+                } else if (intensity > 0.01f)
+                {
+                    intensity -= 0.01f;
+                }
+            }
+            else
+            {
+                if (e.Delta < 0)
+                {
+                    radius += 5;
+                }
+                else if (radius > 5)
+                {
+                    radius -= 5;
+                }
+            }
+            UpdateLabels();
         }
 
         private void UndoButtonClick(object sender, EventArgs e)
@@ -244,7 +314,7 @@ namespace NEA_Procedural_World_Generator
         {
             //remove the start button from controls
             TerrainBox.Controls.Remove(StartButton);
-
+            Form1.world = new World((int)WorldSizeNUD.Value, (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
             //start function/timer
             Form1.world.WorldGeneration();
         }
@@ -257,12 +327,17 @@ namespace NEA_Procedural_World_Generator
 
         private void TerrainBoxMouseDown(object sender, MouseEventArgs e)
         {
+            if (TerrainBox.Contains(StartButton))
+            {
+                return;//check if start button pressed
+            }
+
             //check if in move mode or edit
             if (MouseMode == MouseState.Editing)
             {
                 //if edit mode, :
-                intensity = (e.Button == MouseButtons.Left) ? 0.01f : -0.01f;
-                Form1.world.EditWorld(e.Location.X, e.Location.Y, 30, intensity);
+                intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
+                Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                 TerrainBox.Invalidate();
             } else
             {
@@ -291,7 +366,7 @@ namespace NEA_Procedural_World_Generator
                     lastPos = Pos;
                 } else
                 {
-                    Form1.world.EditWorld(e.Location.X, e.Location.Y, 30, intensity);
+                    Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                     TerrainBox.Invalidate();
                 }
                 
@@ -315,6 +390,7 @@ namespace NEA_Procedural_World_Generator
             {
                 Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
                 Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
+                intensity = Math.Abs(intensity);
             }
             
             Drag = DraggingState.None;
@@ -350,5 +426,6 @@ namespace NEA_Procedural_World_Generator
             }
 
         }
-    }
+    }    
+
 }

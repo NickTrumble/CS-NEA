@@ -110,34 +110,36 @@ namespace NEA_Procedural_World_Generator
             Form1.UI.TerrainBox.Invalidate();
         }
 
-        public void EditWorld(int x, int y, int radius, float intensity)
+        public void EditWorld(int x, int y, int radius, float intensity)//split up into other functions
         {
-            int offsetx = (int)(Form1.xoff * chunkSize);
-            int offsety = (int)(Form1.yoff * chunkSize);
+            float offsetx = (Form1.xoff * chunkSize);
+            float offsety = (Form1.yoff * chunkSize);
 
-            int xmin = Math.Max(0, x - radius + offsetx);
-            int ymin = Math.Max(0, y - radius + offsety);
+            int clickedx = (int)(x + offsetx);
 
-            int xmax = Math.Min(chunkSize * Size, x + radius + offsetx);
-            int ymax = Math.Min(chunkSize * Size, y + radius + offsety);
+            int xmin = (int)Math.Max(0, x - radius + offsetx);
+            int ymin = (int)Math.Max(0, y - radius + offsety);
+
+            int xmax = (int)Math.Min(chunkSize * Size, x + radius + offsetx);
+            int ymax = (int)Math.Min(chunkSize * Size, y + radius + offsety);
 
             int radius2 = radius * radius;
             Parallel.For(xmin, xmax, i =>
             {
                 for (int j = ymin; j < ymax; j++)
                 {
-                    float distance = (float)(Math.Pow(i - x, 2) + Math.Pow(j - y, 2));
+                    float distance = (float)(Math.Pow(i - x - offsetx, 2) + Math.Pow(j - y - offsety, 2));
                     if (distance < radius2)
                     {
                         float incVal = intensity * (1 - (distance / (radius2)));
-                        int X = Math.Min((int)(i / chunkSize + (Form1.xoff)), Size - 1);
-                        int Y = Math.Min((int)(j / chunkSize + (Form1.yoff)), Size - 1);
+                        int X = Math.Min((int)(i / chunkSize), Size - 1);
+                        int Y = Math.Min((int)(j / chunkSize), Size - 1);
 
                         //get chunk reference
                         Chunk chunk = Form1.world.WorldChunks[(X, Y)];
                         //get block reference
-                        int blockx = i - X * chunkSize;
-                        int blocky = j - Y * chunkSize;
+                        int blockx = i % chunkSize;
+                        int blocky = j % chunkSize;
                         Block block = chunk.ChunkBlock[(blockx, blocky)];
                         block.Z += incVal;
 
@@ -145,14 +147,12 @@ namespace NEA_Procedural_World_Generator
                         block.BlockType = BlockStateTransformer(block.Z);
                         Color c = BlockColourTransformer(chunk.ChunkBlock[(blockx, blocky)]);
 
-                        //set pixel colour
+                        //set pixel colour//update to faster version if possible
                         lock (chunk.Bmp)
                         {
                             chunk.Bmp.SetPixel(blockx, blocky, c);
                         }
-                           
-                        
-                        
+
 
                     }
                 }
