@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NEA_Procedural_World_Generator
@@ -8,30 +9,22 @@ namespace NEA_Procedural_World_Generator
     //class to handle all aspects of the interface generation
     public class InterfaceHandler
     {
-        //custom cmaps / colour blind
-        //mesh
-        //mass optimisation
-        //save button/for
-        //manual
-        //loading bar/symbol
-        //terracingh
-
 
         //public variables
         public enum NoiseState { Perlin, Simplex }
-        public enum MouseState { Editing, Moving }
+        public enum MouseState { Editing, Moving, Saving }
         public static MouseState MouseMode = MouseState.Editing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
 
         public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
         public Button PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
-            UndoButton, RedoButton, SaveButton;
+            UndoButton, RedoButton, SaveButton, MeshButton;
         public Label MousePosLabel;
 
         //private variables
         private Form1 Form;
-        private Button StartButton;
+        private Button StartButton, ExplanationButton, SettingsButton;
         private Label RadiusLabel, IntensityLabel;
         
         private int width;
@@ -51,12 +44,12 @@ namespace NEA_Procedural_World_Generator
             InitialiseInterface();
         }
 
-
+        
         //Generates and initialises all of the interfaces
         private void InitialiseInterface()
         {
             Form.Size = new Size(width, height);
-
+            Form.Text = "Procedural Terrain Generator & Editor";
             // Contains all actions, e.g. save,edit,undo...
             MenuBox = new PictureBox
             {
@@ -113,14 +106,25 @@ namespace NEA_Procedural_World_Generator
 
             //mouse mode switch
             MouseModeButton = ButtonCreator(MouseModeButtonClick, new Point(0, MenuBox.Height - 100),
-                "🖌", new Size(100, 25));
-            MouseModeButton.Font = new Font("Arial", 12);
+                "🖌", new Size(100, 25), new Font("Arial", 12));
+
             IntensityLabel = LabelCreator(new Point(0, MenuBox.Height - 120), $"Brush Intensity:{intensity * 100f}");
             RadiusLabel = LabelCreator(new Point(0, MenuBox.Height - 140), $"Brush Radius:{radius}");
 
             //save button
             SaveButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 165),
                 "Save Terrain", new Size(100, 25));
+
+            //instructions button
+            ExplanationButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 190),
+                "?", new Size(50, 25), new Font("Arial", 12));
+            //settings button
+            SettingsButton = ButtonCreator(SaveButtonClick, new Point(50, MenuBox.Height - 190),
+                "⚙️", new Size(50, 25), new Font("Arial", 12));
+
+            //Mesh button
+            MeshButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 215),
+                "Create Mesh", new Size(100, 25));
 
 
             //SLIDERS AND LABELS//
@@ -145,17 +149,22 @@ namespace NEA_Procedural_World_Generator
 
             //Colour num //finish
             ColourNumNUD = SliderCreator(new Point(60, 130), 4, 50, 0, 4, 1);
-            LabelCreator(new Point(0, 130), "Terraces:");
+            LabelCreator(new Point(0, 130), "Colours:");
 
         }
 
-        private Button ButtonCreator(EventHandler OnClick, Point loc, string text, Size size)
+        private Button ButtonCreator(EventHandler OnClick, Point loc, string text, Size size, Font font = null)
         {
+            if (font == null)
+            {
+                font = new Font("Arial", 8.5f);
+            }
             Button b = new Button
             {
                 Location = loc,
                 Text = text,
-                Size = size
+                Size = size,
+                Font = font
             };
             b.Click += OnClick;
             MenuBox.Controls.Add(b);
@@ -193,7 +202,7 @@ namespace NEA_Procedural_World_Generator
             return nud;
         }
 
-        public void SaveButtonClick(object sender, EventArgs e)
+        public async void SaveButtonClick(object sender, EventArgs e)
         {
             OBJExport exporter = new OBJExport(Form1.world, 0.015f);
             DialogResult result = MessageBox.Show(
@@ -204,16 +213,20 @@ namespace NEA_Procedural_World_Generator
                 Description = "Save Terrain at...",
                 SelectedPath = "C:\\Users\\iantr\\source\\repos\\NEA Procedural World Generator\\NEA Procedural World Generator"
             };
-            if (filelocation.ShowDialog() == DialogResult.OK)
+
+            if (result != DialogResult.Cancel)
             {
-                if (result == DialogResult.Yes)
+                if (filelocation.ShowDialog() == DialogResult.OK)
                 {
+                    if (result == DialogResult.Yes)
+                    {
 
-                    exporter.SaveAll(filelocation.SelectedPath);
-                }
-                else//choose chunks
-                {
+                        await exporter.SaveAll(filelocation.SelectedPath);
+                    }
+                    else if (result == DialogResult.No)//choose chunks
+                    {
 
+                    }
                 }
             }
 
@@ -376,8 +389,8 @@ namespace NEA_Procedural_World_Generator
                 int size = Form1.world.Size;
                 int mousex = Math.Max(0, Math.Min(size * World.chunkSize, (int)(e.Location.X + (Form1.xoff * World.chunkSize))));
                 int mouseu = Math.Max(0, Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), size * World.chunkSize));
-                float elevation = Form1.world.WorldChunks[(mousex / World.chunkSize, mouseu / World.chunkSize)].ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize,
-                    mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
+                float elevation = Form1.world.WorldChunks[(Math.Min(mousex / World.chunkSize, size - 1), Math.Min(size - 1, mouseu / World.chunkSize))]
+                    .ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize, mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
                 MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
             }
 

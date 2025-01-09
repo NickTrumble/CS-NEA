@@ -25,7 +25,9 @@ namespace NEA_Procedural_World_Generator
             
         }
 
-        public async void SaveAll(string path)//save whole woruld
+        public async 
+        Task
+SaveAll(string path)//save whole woruld
         {
             row = col = world.Size;
             ATerrain = DictionaryToArray(inTerrain);

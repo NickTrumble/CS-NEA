@@ -24,3 +24,17 @@ namespace NEA_Procedural_World_Generator
         }
     }
 }
+//GOALS
+//mesh
+//mass optimisation
+//save options e.g. other formats plus select region
+//manual and settings:
+//  instructions
+//  cmaps and colour blind
+//  font sizes
+
+//loading bar/symbol / make saving async
+//terracingh
+//zooming
+//smaller worlds
+//fix ui design
