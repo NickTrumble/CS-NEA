@@ -25,7 +25,9 @@ namespace NEA_Procedural_World_Generator
     }
 }
 //GOALS
-//mesh
+//mesh - started:
+//make mesh form
+//make colour lerp
 //mass optimisation
 //save options e.g. other formats plus select region
 //manual and settings:
@@ -38,3 +40,4 @@ namespace NEA_Procedural_World_Generator
 //zooming
 //smaller worlds
 //fix ui design
+//selecting visuals

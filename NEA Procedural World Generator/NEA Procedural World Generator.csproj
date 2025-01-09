@@ -56,6 +56,12 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="InterfaceHandler.cs" />
+    <Compile Include="MeshForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MeshForm.Designer.cs">
+      <DependentUpon>MeshForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Noise.cs" />
     <Compile Include="OBJExport.cs" />
     <Compile Include="Program.cs" />

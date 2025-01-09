@@ -25,12 +25,10 @@ namespace NEA_Procedural_World_Generator
             
         }
 
-        public async 
-        Task
-SaveAll(string path)//save whole woruld
+        public async Task SaveAll(string path)//save whole woruld
         {
             row = col = world.Size;
-            ATerrain = DictionaryToArray(inTerrain);
+            ATerrain = world.DictionaryToArray(inTerrain, row, col, 0, 0);
             await ExportOBJ(path);
         }
 
@@ -40,31 +38,11 @@ SaveAll(string path)//save whole woruld
                                                                             && c.Key.y >= ylow && c.Key.y <= yhigh);
             row = xhigh - xlow + 1;
             col = yhigh - ylow + 1;
-            ATerrain = DictionaryToArray(inTerrain);
+            ATerrain = world.DictionaryToArray(inTerrain, row, col, xlow, ylow);
             await ExportOBJ(path);
         }
 
-        public float[,] DictionaryToArray(Dictionary<(int, int), Chunk> inD)
-        {
-            int width = row * World.chunkSize;
-            int height = col * World.chunkSize;
 
-            float[,] newA = new float[width, height];
-            for (int i = 0; i < row; i++)
-            {
-                for (int j = 0; j < col; j++)
-                {
-                    for (int k = 0; k < World.chunkSize; k++)
-                    {
-                        for (int l = 0; l < World.chunkSize; l++)
-                        {
-                            newA[i * World.chunkSize + k, j * World.chunkSize + l] = world.WorldChunks[(i, j)].ChunkBlock[(k, l)].Z;
-                        }
-                    }
-                }
-            }
-            return newA;
-        }
 
         //generates the vertices used in the obj file 
         public List<(float, float, float)> Generate_vertices()

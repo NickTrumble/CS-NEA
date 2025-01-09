@@ -171,6 +171,28 @@ namespace NEA_Procedural_World_Generator
             return Cloned;
         }
 
+        public float[,] DictionaryToArray(Dictionary<(int, int), Chunk> inD, int row, int col, int xoffset, int yoffset)
+        {
+            int width = row * chunkSize;
+            int height = col * chunkSize;
+            
+
+            float[,] newA = new float[width, height];
+            for (int i = 0; i < row ; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    for (int k = 0; k < chunkSize; k++)
+                    {
+                        for (int l = 0; l < chunkSize; l++)
+                        {
+                            newA[i * chunkSize + k, j * chunkSize + l] = WorldChunks[(i + xoffset, j + yoffset)].ChunkBlock[(k, l)].Z;
+                        }
+                    }
+                }
+            }
+            return newA;
+        }
     }
 
     //class to handle chunks of the world to generate easier

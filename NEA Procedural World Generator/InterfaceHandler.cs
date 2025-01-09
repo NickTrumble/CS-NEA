@@ -12,7 +12,7 @@ namespace NEA_Procedural_World_Generator
 
         //public variables
         public enum NoiseState { Perlin, Simplex }
-        public enum MouseState { Editing, Moving, Saving }
+        public enum MouseState { Editing, Moving, Selecting, Saving }
         public static MouseState MouseMode = MouseState.Editing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
 
@@ -32,6 +32,7 @@ namespace NEA_Procedural_World_Generator
         private PointF lastPos;
         private float intensity = 0.01f;
         private int radius = 30;
+        private (int x, int y) CornerChunk;
 
         private enum DraggingState { None, Dragging }
         private DraggingState Drag = DraggingState.None;
@@ -123,7 +124,7 @@ namespace NEA_Procedural_World_Generator
                 "⚙️", new Size(50, 25), new Font("Arial", 12));
 
             //Mesh button
-            MeshButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 215),
+            MeshButton = ButtonCreator(MeshButtonClick, new Point(0, MenuBox.Height - 215),
                 "Create Mesh", new Size(100, 25));
 
 
@@ -200,6 +201,13 @@ namespace NEA_Procedural_World_Generator
             nud.Controls[0].Visible = false;
             MenuBox.Controls.Add(nud);
             return nud;
+        }
+
+        public void MeshButtonClick(object sender, EventArgs e)
+        {
+            Form.Text = "Click one corner of area to convert to mesh form:";
+            MouseMode = MouseState.Selecting;
+            MeshButton.Text = "Cancel";
         }
 
         public async void SaveButtonClick(object sender, EventArgs e)
@@ -352,11 +360,16 @@ namespace NEA_Procedural_World_Generator
                 intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
                 Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                 TerrainBox.Invalidate();
-            } else
+            } else if (MouseMode == MouseState.Moving)
             {
                 //if move mode, : 
-                    lastPos = e.Location;           
-                    TerrainBox.Cursor = Cursors.Hand;
+                lastPos = e.Location;           
+                TerrainBox.Cursor = Cursors.Hand;
+            }
+            else
+            {
+                CornerChunk = ((int)(e.X + Form1.xoff * World.chunkSize) / World.chunkSize,
+                               (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
             }
             Drag = DraggingState.Dragging;
         }
@@ -377,7 +390,7 @@ namespace NEA_Procedural_World_Generator
                     if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
                     TerrainBox.Invalidate();
                     lastPos = Pos;
-                } else
+                } else if (MouseMode == MouseState.Editing)
                 {
                     Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                     TerrainBox.Invalidate();
@@ -404,6 +417,22 @@ namespace NEA_Procedural_World_Generator
                 Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
                 Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
                 intensity = Math.Abs(intensity);
+            }
+            else if (MouseMode == MouseState.Selecting)
+            {
+                (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
+                                               (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
+                DrawMesh MeshDrawer = new DrawMesh(Form1.world, 200, CornerChunk.x, SecondCorner.x, CornerChunk.y, SecondCorner.y);
+                MeshForm mp = new MeshForm();
+                mp.Show();
+                Form.Hide();
+                Bitmap b = new Bitmap(500, 500);
+                using (Graphics g = Graphics.FromImage(b))
+                {
+                    MeshDrawer.Draw(g);
+                }
+                mp.p.Image = b;
+
             }
             
             Drag = DraggingState.None;
