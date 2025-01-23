@@ -63,7 +63,7 @@ namespace NEA_Procedural_World_Generator
             Point[] corners2 = new Point[3];
             SolidBrush b = new SolidBrush(Color.White);
             SolidBrush b2 = new SolidBrush(Color.White);
-            //int start = (1 >= 180) ? sizex - 2 : 0;
+            //int start = (1 >= 180) ? sizex - 2 : 0;d
             //int end = (start == 0) ? size - 2 : 0;
             //int step = (start == 0) ? 1 : -1;
             int start = 0;
