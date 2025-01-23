@@ -9,6 +9,7 @@ namespace NEA_Procedural_World_Generator
         public float[,] heightmap { get; set; }
         public int xoffset = 300;
         public int yoffset = 200;
+        Color[] Colours = new Color[50];
 
         public int xLow, xHigh, yLow, yHigh, row, col, tilewidth, tileheight, Scale, half;
         public DrawMesh(World world, int scale, int xlow, int xhigh, int ylow, int yhigh)
@@ -25,6 +26,10 @@ namespace NEA_Procedural_World_Generator
             tileheight = Form1.UI.TerrainBox.Height / heightmap.GetLength(1);
             half = heightmap.GetLength(0) / 2;
             Scale = scale;
+            for (int i = 0; i < 50; i++)
+            {
+                Colours[i] = TerrainCmap.Interpolate_value(i / 50f);
+            }
         }
 
         public Point PointCalc(int x, int y, float z, float cos, float sin)
@@ -50,8 +55,8 @@ namespace NEA_Procedural_World_Generator
 
         public void Draw(Graphics g)
         {
-            float cos = (float)Math.Cos((Math.PI / 4) * (Math.PI / 180));
-            float sin = (float)Math.Sin((Math.PI / 4) * (Math.PI / 180));
+            float cos = (float)Math.Cos(45 * (Math.PI / 180));
+            float sin = (float)Math.Sin(45 * (Math.PI / 180));
             int sizex = heightmap.GetLength(0);
             int sizey = heightmap.GetLength(1);
             Point[] corners1 = new Point[3];
@@ -73,7 +78,7 @@ namespace NEA_Procedural_World_Generator
                     corners1[1] = PointCalc(i, j + 1, heightmap[i, j + 1], cos, sin);
                     corners1[2] = PointCalc(i + 1, j, heightmap[i + 1, j], cos, sin);
                     float avgh = (heightmap[i, j] + heightmap[i + 1, j] + heightmap[i, j + 1]) / 3;
-                    b.Color = World.BlockRGB[(int)(4 * Math.Max(0, avgh))];
+                    b.Color = Colours[(int)(49 * Math.Min(1, Math.Max(0, avgh)))];
 
                     g.FillPolygon(b, corners1);
                     corners2[0] = PointCalc(i + 1, j + 1, heightmap[i + 1, j + 1], cos, sin);
@@ -81,7 +86,7 @@ namespace NEA_Procedural_World_Generator
                     corners2[2] = PointCalc(i + 1, j, heightmap[i + 1, j], cos, sin);
 
                     float avgh2 = (heightmap[i + 1, j + 1] + heightmap[i + 1, j] + heightmap[i, j + 1]) / 3;
-                    b2.Color = World.BlockRGB[(int)(4 * Math.Max(0, avgh2))];
+                    b2.Color = Colours[(int)(49 * Math.Min(1, Math.Max(0, avgh2)))];
 
                     g.FillPolygon(b2, corners2);
                 }

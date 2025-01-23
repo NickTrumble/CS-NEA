@@ -20,14 +20,7 @@ namespace NEA_Procedural_World_Generator
         public List<Chunk> temp;
 
 
-        public static Color[] BlockRGB = new Color[5]
-        {
-            Color.FromArgb(59, 107, 161),
-            Color.FromArgb(85, 145, 79),
-            Color.FromArgb(139, 107, 79),
-            Color.FromArgb(152, 161, 138),
-            Color.FromArgb(211, 213, 216)
-        };
+        
 
         //Color.FromArgb(59, 107, 161), Color.FromArgb(232, 235, 56),
         //    Color.FromArgb(39, 99, 21), Color.FromArgb(88, 57, 39), 
@@ -83,10 +76,10 @@ namespace NEA_Procedural_World_Generator
 
         public static Color BlockColourTransformer(Block block)
         {
-            int index = (int)block.BlockType;
-            Color c = BlockRGB[index];
-            return c;
-            //return Color.FromArgb((int)(val * 255), (int)(val * 255), (int)(val * 255));
+            //int index = (int)block.BlockType;
+            //Color c = BlockRGB[index];
+            //return c;
+            return TerrainCmap.Interpolate_value(block.Z);
         }
 
         public static float min = 1;
