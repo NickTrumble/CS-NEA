@@ -10,6 +10,7 @@ namespace NEA_Procedural_World_Generator
     public class InterfaceHandler
     {
 
+        #region variables
         //public variables
         public enum NoiseState { Perlin, Simplex }
         public enum MouseState { Editing, Moving, Selecting, Saving }
@@ -26,7 +27,7 @@ namespace NEA_Procedural_World_Generator
         private Form1 Form;
         private Button StartButton, ExplanationButton, SettingsButton;
         private Label RadiusLabel, IntensityLabel;
-        
+
         private int width;
         private int height;
         private PointF lastPos;
@@ -36,7 +37,9 @@ namespace NEA_Procedural_World_Generator
 
         private enum DraggingState { None, Dragging }
         private DraggingState Drag = DraggingState.None;
+        #endregion
 
+        #region Setup
         public InterfaceHandler(Form1 form)
         {
             Form = form;
@@ -45,7 +48,6 @@ namespace NEA_Procedural_World_Generator
             InitialiseInterface();
         }
 
-        
         //Generates and initialises all of the interfaces
         private void InitialiseInterface()
         {
@@ -65,7 +67,7 @@ namespace NEA_Procedural_World_Generator
             TerrainBox = new PictureBox
             {
                 Location = new Point(110, 5),
-                Size = new Size(Form.ClientSize.Width- 115, Form.ClientSize.Height - 10),
+                Size = new Size(Form.ClientSize.Width - 115, Form.ClientSize.Height - 10),
                 BorderStyle = BorderStyle.FixedSingle,
                 //BackColor = Color.Red
             };
@@ -91,70 +93,68 @@ namespace NEA_Procedural_World_Generator
             //BUTTONS//
             //regenerate perlin
             PerlinGen = ButtonCreator(PerlinButtonClick, new Point(0, MenuBox.Height - 25),
-                "Perlin Generation", new Size(100, 25));
+                "Perlin Generation", new Size(100, 25), null, MenuBox);
 
             //regenerate simplex
             SimplexGen = ButtonCreator(SimplexButtonClick, new Point(0, MenuBox.Height - 50),
-                "Simplex Gen", new Size(100, 25));
+                "Simplex Gen", new Size(100, 25), null, MenuBox);
 
             //undo button
             UndoButton = ButtonCreator(UndoButtonClick, new Point(0, MenuBox.Height - 75),
-                "Undo", new Size(50, 25));
+                "Undo", new Size(50, 25), null, MenuBox);
 
             //redo button
             RedoButton = ButtonCreator(RedoButtonClick, new Point(50, MenuBox.Height - 75),
-                "Redo", new Size(50, 25));
+                "Redo", new Size(50, 25), null, MenuBox);
 
             //mouse mode switch
             MouseModeButton = ButtonCreator(MouseModeButtonClick, new Point(0, MenuBox.Height - 100),
-                "🖌", new Size(100, 25), new Font("Arial", 12));
+                "🖌", new Size(100, 25), new Font("Arial", 12), MenuBox);
 
-            IntensityLabel = LabelCreator(new Point(0, MenuBox.Height - 120), $"Brush Intensity:{intensity * 100f}");
-            RadiusLabel = LabelCreator(new Point(0, MenuBox.Height - 140), $"Brush Radius:{radius}");
+            IntensityLabel = LabelCreator(new Point(0, MenuBox.Height - 120), $"Brush Intensity:{intensity * 100f}", MenuBox);
+            RadiusLabel = LabelCreator(new Point(0, MenuBox.Height - 140), $"Brush Radius:{radius}", MenuBox);
 
             //save button
             SaveButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 165),
-                "Save Terrain", new Size(100, 25));
+                "Save Terrain", new Size(100, 25), null, MenuBox);
 
             //instructions button
             ExplanationButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 190),
-                "?", new Size(50, 25), new Font("Arial", 12));
+                "?", new Size(50, 25), new Font("Arial", 12), MenuBox);
             //settings button
             SettingsButton = ButtonCreator(SaveButtonClick, new Point(50, MenuBox.Height - 190),
-                "⚙️", new Size(50, 25), new Font("Arial", 12));
+                "⚙️", new Size(50, 25), new Font("Arial", 12), MenuBox);
 
             //Mesh button
             MeshButton = ButtonCreator(MeshButtonClick, new Point(0, MenuBox.Height - 215),
-                "Create Mesh", new Size(100, 25));
+                "Create Mesh", new Size(100, 25), null, MenuBox);
 
 
             //SLIDERS AND LABELS//
             //mouse pos
-            MousePosLabel = LabelCreator(new Point(0, 5), "[0, 0] = 0.0");
+            MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 340), "[0, 0] = 0.0", MenuBox);
 
             //world sizez
-            WorldSizeNUD = SliderCreator(new Point(60, 30), 24, 256, 0, 32, 1);
-            LabelCreator(new Point(0, 30), "World Size:");
+            WorldSizeNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 24, 256, 0, 32, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 315), "World Size:", MenuBox);
 
             //Scale
-            ScaleNUD = SliderCreator(new Point(60, 55), 1f, 16f, 0, 8f, 1);
-            LabelCreator(new Point(0, 55), "Scale:");
+            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 290), 1f, 16f, 0, 8f, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 290), "Scale:", MenuBox);
 
             //Octaves
-            OctavesNUD = SliderCreator(new Point(60, 80), 1f, 10f, 0, 4, 1);
-            LabelCreator(new Point(0, 80), "Octaves:");
+            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 265), 1f, 10f, 0, 4, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 265), "Octaves:", MenuBox);
 
             //Persistance
-            PersistanceNUD = SliderCreator(new Point(60, 105), 0.1f, 2f, 1, 0.5f, 0.1f);
-            LabelCreator(new Point(0, 105), "Persistance:");
-
-            //Colour num //finish
-            ColourNumNUD = SliderCreator(new Point(60, 130), 4, 50, 0, 4, 1);
-            LabelCreator(new Point(0, 130), "Colours:");
+            PersistanceNUD = SliderCreator(new Point(60, MenuBox.Height - 240), 0.1f, 2f, 1, 0.5f, 0.1f, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 240), "Persistance:", MenuBox);
 
         }
+        #endregion
 
-        private Button ButtonCreator(EventHandler OnClick, Point loc, string text, Size size, Font font = null)
+        #region control editors
+        public static Button ButtonCreator(EventHandler OnClick, Point loc, string text, Size size, Font font = null, Control T = null)
         {
             if (font == null)
             {
@@ -168,12 +168,16 @@ namespace NEA_Procedural_World_Generator
                 Font = font
             };
             b.Click += OnClick;
-            MenuBox.Controls.Add(b);
+            T.Controls.Add(b);
             return b;
         }
 
-        private Label LabelCreator(Point loc, string text)
+        public static Label LabelCreator(Point loc, string text, Control T = null)
         {
+            if (T == null)
+            {
+                T = Form1.UI.MenuBox;
+            }
             Label l = new Label
             {
                 Location = loc,
@@ -182,12 +186,16 @@ namespace NEA_Procedural_World_Generator
                 TextAlign = ContentAlignment.TopLeft,
                 Font = new Font("Ariel", 8)
             };
-            MenuBox.Controls.Add(l);
+            T.Controls.Add(l);
             return l;
         }
 
-        private NumericUpDown SliderCreator(Point loc, float min = 0, float max = 10, int dp = 0, float val = 0, float inc = 1)
+        public static NumericUpDown SliderCreator(Point loc, float min = 0, float max = 10, int dp = 0, float val = 0, float inc = 1, Control T = null)
         {
+            if (T == null)
+            {
+                T = Form1.UI.MenuBox;
+            }
             NumericUpDown nud = new NumericUpDown
             {
                 Minimum = (decimal)min,
@@ -199,10 +207,18 @@ namespace NEA_Procedural_World_Generator
                 Size = new Size(35, 25)
             };
             nud.Controls[0].Visible = false;
-            MenuBox.Controls.Add(nud);
+            T.Controls.Add(nud);
             return nud;
         }
 
+        private void UpdateLabels()
+        {
+            IntensityLabel.Text = $"Brush Intensity:{(int)(intensity * 100f)}";
+            RadiusLabel.Text = $"Brush Radius:{radius}";
+        }
+        #endregion
+
+        #region click handlers
         public void MeshButtonClick(object sender, EventArgs e)
         {
             Form.Text = "Click one corner of area to convert to mesh form:";
@@ -241,44 +257,16 @@ namespace NEA_Procedural_World_Generator
 
         }
 
-        private void UpdateLabels()
-        {
-            IntensityLabel.Text = $"Brush Intensity:{(int)(intensity * 100f)}";
-            RadiusLabel.Text = $"Brush Radius:{radius}";
-        }
 
-        private void BrushEditor(object sender, MouseEventArgs e)
-        {
-           if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
-            {
-                if (e.Delta < 0)
-                {
-                    intensity += 0.01f;
-                } else if (intensity > 0.01f)
-                {
-                    intensity -= 0.01f;
-                }
-            }
-            else
-            {
-                if (e.Delta < 0)
-                {
-                    radius += 5;
-                }
-                else if (radius > 5)
-                {
-                    radius -= 5;
-                }
-            }
-            UpdateLabels();
-        }
+
+
 
         private void UndoButtonClick(object sender, EventArgs e)
         {
             if (Form1.world.UndoStack.Count > 0)//check count
             {
                 Form1.world.RedoStack.Push(World.CloneWorld(Form1.world.WorldChunks.Values.ToList()));//redo stack.push -> current world.clone
-                foreach(Chunk c in Form1.world.UndoStack.Pop())
+                foreach (Chunk c in Form1.world.UndoStack.Pop())
                 {
                     Form1.world.WorldChunks[(c.X, c.Y)] = c;//current world -> undo stack,pop
                 }
@@ -293,7 +281,7 @@ namespace NEA_Procedural_World_Generator
             if (Form1.world.RedoStack.Count > 0)//check count
             {
                 Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.WorldChunks.Values.ToList()));//undo stack.push -> current.world.clone
-                foreach(Chunk c in Form1.world.RedoStack.Pop())
+                foreach (Chunk c in Form1.world.RedoStack.Pop())
                 {
                     Form1.world.WorldChunks[(c.X, c.Y)] = c;//current world -> redo stack.pop
                 }
@@ -346,6 +334,9 @@ namespace NEA_Procedural_World_Generator
             Application.Exit();
         }
 
+        #endregion
+
+        #region Other Handlers
         private void TerrainBoxMouseDown(object sender, MouseEventArgs e)
         {
             if (TerrainBox.Contains(StartButton))
@@ -360,10 +351,11 @@ namespace NEA_Procedural_World_Generator
                 intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
                 Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                 TerrainBox.Invalidate();
-            } else if (MouseMode == MouseState.Moving)
+            }
+            else if (MouseMode == MouseState.Moving)
             {
                 //if move mode, : 
-                lastPos = e.Location;           
+                lastPos = e.Location;
                 TerrainBox.Cursor = Cursors.Hand;
             }
             else
@@ -390,12 +382,13 @@ namespace NEA_Procedural_World_Generator
                     if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
                     TerrainBox.Invalidate();
                     lastPos = Pos;
-                } else if (MouseMode == MouseState.Editing)
+                }
+                else if (MouseMode == MouseState.Editing)
                 {
                     Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
                     TerrainBox.Invalidate();
                 }
-                
+
             }
             if (!TerrainBox.Controls.Contains(StartButton))
             {
@@ -434,11 +427,38 @@ namespace NEA_Procedural_World_Generator
                 mp.p.Image = b;
 
             }
-            
+
             Drag = DraggingState.None;
             TerrainBox.Cursor = Cursors.Default;
 
-            
+
+        }
+
+        private void BrushEditor(object sender, MouseEventArgs e)
+        {
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            {
+                if (e.Delta < 0)
+                {
+                    intensity += 0.01f;
+                }
+                else if (intensity > 0.01f)
+                {
+                    intensity -= 0.01f;
+                }
+            }
+            else
+            {
+                if (e.Delta < 0)
+                {
+                    radius += 5;
+                }
+                else if (radius > 5)
+                {
+                    radius -= 5;
+                }
+            }
+            UpdateLabels();
         }
 
         public void PopulateTerrainBox(object sender, PaintEventArgs e)
@@ -468,6 +488,8 @@ namespace NEA_Procedural_World_Generator
             }
 
         }
-    }    
+
+        #endregion
+    }
 
 }

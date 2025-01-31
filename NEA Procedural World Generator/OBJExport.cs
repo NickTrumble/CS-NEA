@@ -22,7 +22,7 @@ namespace NEA_Procedural_World_Generator
             world = inworld;
             inTerrain = world.WorldChunks;
             MeshScale = Meshscale;
-            
+
         }
 
         public async Task SaveAll(string path)//save whole woruld
@@ -34,7 +34,7 @@ namespace NEA_Procedural_World_Generator
 
         public async void SaveRegion(int xlow, int ylow, int xhigh, int yhigh, string path)//save region selected
         {
-            inTerrain = (Dictionary<(int x, int y), Chunk>)inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh 
+            inTerrain = (Dictionary<(int x, int y), Chunk>)inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh
                                                                             && c.Key.y >= ylow && c.Key.y <= yhigh);
             row = xhigh - xlow + 1;
             col = yhigh - ylow + 1;
@@ -108,6 +108,6 @@ namespace NEA_Procedural_World_Generator
 
         }
     }
-    
+
 
 }

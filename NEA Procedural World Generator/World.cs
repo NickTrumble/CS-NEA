@@ -20,7 +20,7 @@ namespace NEA_Procedural_World_Generator
         public List<Chunk> temp;
 
 
-        
+
 
         //Color.FromArgb(59, 107, 161), Color.FromArgb(232, 235, 56),
         //    Color.FromArgb(39, 99, 21), Color.FromArgb(88, 57, 39), 
@@ -38,11 +38,12 @@ namespace NEA_Procedural_World_Generator
             if (InterfaceHandler.NoiseMethodd == InterfaceHandler.NoiseState.Perlin)
             {
                 Noise = new PerlinNoise(size * chunkSize, octaves, pers);
-            } else
+            }
+            else
             {
                 Noise = new SimplexNoise(size * chunkSize, octaves, pers);
             }
-            
+
             Persistance = pers;
             Octaves = octaves;
             Scale = scale;
@@ -151,13 +152,13 @@ namespace NEA_Procedural_World_Generator
                 }
 
             });
-            
+
         }
 
         public static List<Chunk> CloneWorld(List<Chunk> world)
         {
             List<Chunk> Cloned = new List<Chunk>();
-            foreach(Chunk c in world)
+            foreach (Chunk c in world)
             {
                 Cloned.Add((Chunk)((ICloneable)c).Clone());
             }
@@ -168,10 +169,10 @@ namespace NEA_Procedural_World_Generator
         {
             int width = row * chunkSize;
             int height = col * chunkSize;
-            
+
 
             float[,] newA = new float[width, height];
-            for (int i = 0; i < row ; i++)
+            for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < col; j++)
                 {
@@ -208,7 +209,7 @@ namespace NEA_Procedural_World_Generator
             Bmp = new Bitmap(World.chunkSize, World.chunkSize);
         }
 
-        public static Chunk ChunkGeneration(Chunk chunk) 
+        public static Chunk ChunkGeneration(Chunk chunk)
         {
             float freq = Form1.world.Scale;
             for (int i = 0; i < World.chunkSize; i++)
@@ -244,7 +245,7 @@ namespace NEA_Procedural_World_Generator
         {
             Chunk chunk = new Chunk(X, Y);
             chunk.Bmp = new Bitmap(this.Bmp);
-            foreach(var block in ChunkBlock)
+            foreach (var block in ChunkBlock)
             {
                 chunk.ChunkBlock[block.Key] = (Block)block.Value.Clone();
             }
@@ -287,7 +288,7 @@ namespace NEA_Procedural_World_Generator
             };
         }
 
-        
+
     }
 
 

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace NEA_Procedural_World_Generator
 {
@@ -63,4 +58,5 @@ namespace NEA_Procedural_World_Generator
             return Color.FromArgb(r, g, b);
         }
     }
+
 }
