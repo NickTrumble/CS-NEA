@@ -209,7 +209,7 @@ namespace NEA_Procedural_World_Generator
             nud.Controls[0].Visible = false;
             T.Controls.Add(nud);
             return nud;
-        }
+        } 
 
         private void UpdateLabels()
         {
@@ -416,16 +416,9 @@ namespace NEA_Procedural_World_Generator
                 (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
                                                (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
                 DrawMesh MeshDrawer = new DrawMesh(Form1.world, 200, CornerChunk.x, SecondCorner.x, CornerChunk.y, SecondCorner.y);
-                MeshForm mp = new MeshForm();
+                MeshForm mp = new MeshForm(MeshDrawer);
                 mp.Show();
                 Form.Hide();
-                Bitmap b = new Bitmap(500, 500);
-                using (Graphics g = Graphics.FromImage(b))
-                {
-                    MeshDrawer.Draw(g);
-                }
-                mp.p.Image = b;
-
             }
 
             Drag = DraggingState.None;

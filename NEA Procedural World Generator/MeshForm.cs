@@ -1,45 +1,98 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using System;
 
 namespace NEA_Procedural_World_Generator
 {
     public partial class MeshForm : Form
     {
-        public PictureBox p, MenuBox;
-        public NumericUpDown RotationNUD;
+        public PictureBox TerrainBox, MenuBox;
+        public NumericUpDown RotationZNUD, RotationYNUD;
         public int width = 800;
         public int height = 500;
-        public MeshForm()
+        DrawMesh MeshDrawer;
+        private Point lastClicked;
+        bool clicked = false;
+        public MeshForm(DrawMesh dm)
         {
-            Initialise();
+            MeshDrawer = dm;
             InitializeComponent();
+            Initialise();
         }
 
         public void Initialise()
         {
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            
             Size = new Size(width, height);
-            p = new PictureBox
+            TerrainBox = new PictureBox
             {
-                Size = new Size(width - 120, height - 10),
+                Size = new Size(ClientSize.Width - 115, ClientSize.Height - 10),
                 Location = new Point(110, 5),
                 BorderStyle = BorderStyle.FixedSingle
             };
-            Controls.Add(p);
-            p.BringToFront();
+            TerrainBox.Paint += TerrainBox_Paint;
+            TerrainBox.MouseDown += TerrainBoxMouseDown;
+            TerrainBox.MouseUp += TerrainBoxMouseUp;
+            TerrainBox.MouseMove += TerrainBoxMouseMove;
+            Controls.Add(TerrainBox);
+            TerrainBox.BringToFront();
 
             MenuBox = new PictureBox
             {
                 Location = new Point(5, 5),
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(100, height - 10)
+                Size = new Size(100, ClientSize.Height - 20)
             };
             Controls.Add(MenuBox);
 
 
-            RotationNUD = InterfaceHandler.SliderCreator(new Point(0, 20), 0f, 360f, 0, 4f, 1f, MenuBox);
+            RotationZNUD = InterfaceHandler.SliderCreator(new Point(5, 20), 0f, 360f, 0, 4f, 1f, MenuBox);
+            RotationZNUD.ValueChanged += RotationSliderUpdate;
+
+            RotationYNUD = InterfaceHandler.SliderCreator(new Point(5, 40), 0f, 360f, 0, 4f, 1f, MenuBox);
+            RotationYNUD.ValueChanged += RotationSliderUpdate;
         }
 
+        private void TerrainBox_Paint(object sender, PaintEventArgs e)
+        {
+            MeshDrawer.Draw(e.Graphics, (int)RotationZNUD.Value, (int)RotationYNUD.Value);
+        }
 
+        public void RotationSliderUpdate(object sender, EventArgs e)
+        {
+            TerrainBox.Invalidate();
+        }
+
+        public void TerrainBoxMouseDown(object sender, MouseEventArgs e)
+        {
+            clicked = true;
+            lastClicked = e.Location;
+        }
+
+        public void TerrainBoxMouseMove(object sender, MouseEventArgs e)
+        {
+            if (clicked)
+            {
+                int differencez = (e.Location.X - lastClicked.X) / 2;
+                int differencey = (e.Location.Y - lastClicked.Y);
+                RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
+                RotationYNUD.Value = (RotationYNUD.Value - differencey + 360) % 360;
+
+                lastClicked = e.Location;
+            }
+
+            
+        }
+
+        public void TerrainBoxMouseUp(object sender, MouseEventArgs e)
+        {
+            clicked = false;
+            int differencez = (e.Location.X - lastClicked.X) / 2;
+            int differencey = (e.Location.Y - lastClicked.Y);
+            RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
+            RotationYNUD.Value = (RotationYNUD.Value - differencey + 360) % 360;
+        }
     }
 
 }
