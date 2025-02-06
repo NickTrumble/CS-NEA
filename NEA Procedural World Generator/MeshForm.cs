@@ -7,7 +7,7 @@ namespace NEA_Procedural_World_Generator
     public partial class MeshForm : Form
     {
         public PictureBox TerrainBox, MenuBox;
-        public NumericUpDown RotationZNUD, RotationYNUD;
+        public NumericUpDown RotationZNUD;
         public int width = 800;
         public int height = 500;
         DrawMesh MeshDrawer;
@@ -49,14 +49,11 @@ namespace NEA_Procedural_World_Generator
 
             RotationZNUD = InterfaceHandler.SliderCreator(new Point(5, 20), 0f, 360f, 0, 4f, 1f, MenuBox);
             RotationZNUD.ValueChanged += RotationSliderUpdate;
-
-            RotationYNUD = InterfaceHandler.SliderCreator(new Point(5, 40), 0f, 360f, 0, 4f, 1f, MenuBox);
-            RotationYNUD.ValueChanged += RotationSliderUpdate;
         }
 
         private void TerrainBox_Paint(object sender, PaintEventArgs e)
         {
-            MeshDrawer.Draw(e.Graphics, (int)RotationZNUD.Value, (int)RotationYNUD.Value);
+            MeshDrawer.Draw(e.Graphics, (int)RotationZNUD.Value);
         }
 
         public void RotationSliderUpdate(object sender, EventArgs e)
@@ -75,9 +72,8 @@ namespace NEA_Procedural_World_Generator
             if (clicked)
             {
                 int differencez = (e.Location.X - lastClicked.X) / 2;
-                int differencey = (e.Location.Y - lastClicked.Y);
+
                 RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
-                RotationYNUD.Value = (RotationYNUD.Value - differencey + 360) % 360;
 
                 lastClicked = e.Location;
             }
@@ -89,9 +85,8 @@ namespace NEA_Procedural_World_Generator
         {
             clicked = false;
             int differencez = (e.Location.X - lastClicked.X) / 2;
-            int differencey = (e.Location.Y - lastClicked.Y);
             RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
-            RotationYNUD.Value = (RotationYNUD.Value - differencey + 360) % 360;
+
         }
     }
 
