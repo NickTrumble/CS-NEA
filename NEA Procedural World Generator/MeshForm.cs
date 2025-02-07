@@ -47,7 +47,7 @@ namespace NEA_Procedural_World_Generator
             Controls.Add(MenuBox);
 
 
-            RotationZNUD = InterfaceHandler.SliderCreator(new Point(5, 20), 0f, 360f, 0, 4f, 1f, MenuBox);
+            RotationZNUD = InterfaceHandler.SliderCreator(new Point(5, 20), 0f, 360f, 1, 4f, 1f, MenuBox);
             RotationZNUD.ValueChanged += RotationSliderUpdate;
         }
 
@@ -71,7 +71,7 @@ namespace NEA_Procedural_World_Generator
         {
             if (clicked)
             {
-                int differencez = (e.Location.X - lastClicked.X) / 2;
+                decimal differencez = (e.Location.X - lastClicked.X);
 
                 RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
 
