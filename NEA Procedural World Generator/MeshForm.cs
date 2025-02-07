@@ -8,6 +8,7 @@ namespace NEA_Procedural_World_Generator
     {
         public PictureBox TerrainBox, MenuBox;
         public NumericUpDown RotationZNUD;
+        public Button BackButton;
         public int width = 800;
         public int height = 500;
         DrawMesh MeshDrawer;
@@ -46,9 +47,27 @@ namespace NEA_Procedural_World_Generator
             };
             Controls.Add(MenuBox);
 
+            BackButton = new Button
+            {
+                Text = "Home Form",
+                Size = new Size(100, 50),
+                Location = new Point(0, 50)
+            };
+            MenuBox.Controls.Add(BackButton);
+            BackButton.Click += BackButtonPress;
+
 
             RotationZNUD = InterfaceHandler.SliderCreator(new Point(5, 20), 0f, 360f, 1, 4f, 1f, MenuBox);
             RotationZNUD.ValueChanged += RotationSliderUpdate;
+
+
+        }
+
+        public void BackButtonPress(object sender, EventArgs e)
+        {
+            Form1 form = new Form1(Form1.world);
+            form.Show();
+            this.Hide();
         }
 
         private void TerrainBox_Paint(object sender, PaintEventArgs e)
@@ -72,9 +91,9 @@ namespace NEA_Procedural_World_Generator
             if (clicked)
             {
                 decimal differencez = (e.Location.X - lastClicked.X);
-
+                float camdifference = (e.Location.Y - lastClicked.Y) / 3;
                 RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
-
+                DrawMesh.CamerDir.Y += camdifference;
                 lastClicked = e.Location;
             }
 

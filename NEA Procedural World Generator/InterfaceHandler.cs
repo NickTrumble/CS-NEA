@@ -84,7 +84,7 @@ namespace NEA_Procedural_World_Generator
             {
                 Location = new Point((TerrainBox.Width / 2) - 60, (TerrainBox.Height / 2) - 40),
                 Size = new Size(120, 80),
-                Text = "Generate World"
+                Text = "Load World"
             };
             StartButton.BringToFront();
             StartButton.Click += StartButtonClick;
@@ -323,9 +323,16 @@ namespace NEA_Procedural_World_Generator
         {
             //remove the start button from controls
             TerrainBox.Controls.Remove(StartButton);
-            Form1.world = new World((int)WorldSizeNUD.Value, (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
-            //start function/timer
-            Form1.world.WorldGeneration();
+            if (Form1.world == null)
+            {
+                Form1.world = new World((int)WorldSizeNUD.Value, (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
+                //start function/timer
+                Form1.world.WorldGeneration();
+            } else
+            {
+                TerrainBox.Invalidate();
+            }
+
         }
 
         private void ExitButtonClick(object sender, EventArgs e)

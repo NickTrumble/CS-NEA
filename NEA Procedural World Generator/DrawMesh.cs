@@ -15,7 +15,7 @@ namespace NEA_Procedural_World_Generator
         public int yoffset = 200;
         Color[] Colours = new Color[50];
 
-        Vector3 CamerDir = new Vector3(0, 0.5f, 0);
+        public static Vector3 CamerDir = new Vector3(0, 0.5f, 0);
         Vector3 CameraPos;
 
         public int xLow, xHigh, yLow, yHigh, row, col, tilewidth, tileheight, Scale, half;
