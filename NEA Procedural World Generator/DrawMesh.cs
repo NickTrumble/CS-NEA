@@ -15,8 +15,6 @@ namespace NEA_Procedural_World_Generator
         public int yoffset = 200;
         Color[] Colours = new Color[50];
 
-        public static Vector3 CamerDir = new Vector3(0, 0.5f, 0);
-        Vector3 CameraPos;
 
         public int xLow, xHigh, yLow, yHigh, row, col, tilewidth, tileheight, Scale, half;
         public DrawMesh(World world, int scale, int xlow, int xhigh, int ylow, int yhigh)
@@ -45,25 +43,22 @@ namespace NEA_Procedural_World_Generator
         }
         #endregion
 
-        public Point PointCalc(Vector3 V, float cos, float sin)
+        public Point PointCalc(Vector3 V, Matrix3x2 rMatrix)
         {
-            float cx = V.X - half;
-            float cy = V.Z - half;
-            float hegiht = V.Y;
-
-            int X = (int)((cos * cx - sin * cy) * tilewidth / 2f + xoffset);
-            int Y = (int)((sin * cx + cos * cy) * tilewidth / 4f - hegiht + yoffset + half);
+            Vector2 transformed = Vector2.Transform(new Vector2(V.X - half, V.Z - half), rMatrix);
+            int X = (int)(transformed.X * tilewidth * 0.5f + xoffset);
+            int Y = (int)(transformed.Y * tileheight * 0.25f + yoffset - V.Y);
 
             return new Point(X, Y);
         }
 
-        public Point[] cornerCalc(Vector3[] Vectors, float cos, float sin)
+        public Point[] cornerCalc(Vector3[] Vectors, Matrix3x2 rMatrix)
         {
             Point[] corners = new Point[4];
-            corners[0] = PointCalc(Vectors[0], cos, sin);
-            corners[1] = PointCalc(Vectors[1], cos, sin);
-            corners[2] = PointCalc(Vectors[2], cos, sin);
-            corners[3] = PointCalc(Vectors[3], cos, sin);
+            corners[0] = PointCalc(Vectors[0], rMatrix);
+            corners[1] = PointCalc(Vectors[1], rMatrix);
+            corners[2] = PointCalc(Vectors[2], rMatrix);
+            corners[3] = PointCalc(Vectors[3], rMatrix);
 
             return corners;
         }
@@ -79,64 +74,9 @@ namespace NEA_Procedural_World_Generator
             return Vectors;
         }
 
-        public bool BackFace(Vector3[] points)
-        {
-            ////find top vertice
-            ////top vertice - others = edge vectors
-            ////get vector forwards/back and up/down in terms of camera directionm
-            ////find gradient
-            //// if gradient < 0 then draw
-            ////discard
-            //Vector3 center = (points[0] + points[1] + points[2]) / 3;
-            //Vector3 camera = Vector3.Normalize(center - CamerDir);
-            //Vector3 U = Vector3.Normalize(points[1] - points[0]);
-            //Vector3 V = Vector3.Normalize(points[2] - points[0]);
-
-            //Vector3 normal = Vector3.Normalize(Vector3.Cross(U, V));
-            //float dot = Vector3.Dot(normal, camera);
-            //if (dot < 0)
-            //{
-            //    return true;
-            //}
-            //return false;
-            Vector3 center = (points[0] + points[1] + points[2]) / 3;
-            
-            Vector3 camera = Vector3.Normalize(center - CamerDir);
-
-            Vector3 U = Vector3.Normalize(points[1] - points[0]);
-            Vector3 V = Vector3.Normalize(points[2] - points[0]);
-
-            Vector3 normal = Vector3.Normalize(Vector3.Cross(U, V));
-
-            float dot = Vector3.Dot(camera, normal);
-
-            double angle = Math.Acos(dot / (normal.Length() * camera.Length()));
-
-            return angle > Math.PI / 2;
-        }
-
-
-
-
         public void Draw(Graphics g, float angle)
         {
-            float cos = (float)Math.Cos(angle * (Math.PI / 180));
-            float sin = (float)Math.Sin(angle * (Math.PI / 180));
-
-            CameraPos = new Vector3
-            {
-                X = half + 100 * sin,
-                Y = 0,
-                Z = half + 100 * cos
-            };
-
-            CamerDir = new Vector3
-            {
-                X = half - CameraPos.X,
-                Y = Scale / 2 - CameraPos.Y,
-                Z = half - CameraPos.Z
-            };
-
+            Matrix3x2 Rmatrix = Matrix3x2.CreateRotation((float)(angle * Math.PI / 180));
             int sizex = heightmap.GetLength(0);
             int sizey = heightmap.GetLength(1);
             Point[] corners;
@@ -149,18 +89,16 @@ namespace NEA_Procedural_World_Generator
                 for (int j = 0; j != endy; j += 1)
                 {
                     Vectors = VectorCalc(i, j);
-                    corners = cornerCalc(Vectors, cos, sin);
+                    corners = cornerCalc(Vectors, Rmatrix);
 
                     float avg1 = (heightmap[i, j] + heightmap[i + 1, j] + heightmap[i, j + 1]) / 3;
                     float avg2 = (heightmap[i + 1, j + 1] + heightmap[i + 1, j] + heightmap[i, j + 1]) / 3;
 
                     b.Color = Colours[(int)(49 * Math.Min(1, Math.Max(0, avg1)))];
-                    if (BackFace(new Vector3[3] { Vectors[2], Vectors[0], Vectors[1] }))
-                        g.FillPolygon(b, new Point[3] { corners[2], corners[0], corners[1] });
+                    g.FillPolygon(b, new Point[3] { corners[2], corners[0], corners[1] });
 
                     b.Color = Colours[(int)(49 * Math.Min(1, Math.Max(0, avg2)))];
-                    if (BackFace(new Vector3[3] { Vectors[2], Vectors[1], Vectors[3] }))
-                        g.FillPolygon(b, new Point[3] { corners[2], corners[1], corners[3] });
+                    g.FillPolygon(b, new Point[3] { corners[2], corners[1], corners[3] });
                 }
             }
         }
