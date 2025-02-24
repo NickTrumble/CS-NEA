@@ -119,10 +119,10 @@ namespace NEA_Procedural_World_Generator
                 "Save Terrain", new Size(100, 25), null, MenuBox);
 
             //instructions button
-            ExplanationButton = ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 190),
+            ExplanationButton = ButtonCreator(HelpButtonClick, new Point(0, MenuBox.Height - 190),
                 "?", new Size(50, 25), new Font("Arial", 12), MenuBox);
             //settings button
-            SettingsButton = ButtonCreator(SaveButtonClick, new Point(50, MenuBox.Height - 190),
+            SettingsButton = ButtonCreator(SettingsButtonClick, new Point(50, MenuBox.Height - 190),
                 "⚙️", new Size(50, 25), new Font("Arial", 12), MenuBox);
 
             //Mesh button
@@ -219,6 +219,19 @@ namespace NEA_Procedural_World_Generator
         #endregion
 
         #region click handlers
+
+        public void SettingsButtonClick(object sender, EventArgs e)
+        {
+            SettingsForm Settingform = new SettingsForm();
+            Settingform.Show();
+        }
+
+        public void HelpButtonClick(object sender, EventArgs e)
+        {
+            HelpForm Helpform = new HelpForm();
+            Helpform.Show();
+        }
+
         public void MeshButtonClick(object sender, EventArgs e)
         {
             Form.Text = "Click one corner of area to convert to mesh form:";

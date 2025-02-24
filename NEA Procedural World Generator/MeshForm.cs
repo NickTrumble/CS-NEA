@@ -92,8 +92,7 @@ namespace NEA_Procedural_World_Generator
             {
                 decimal differencez = (e.Location.X - lastClicked.X);
                 float camdifference = (e.Location.Y - lastClicked.Y) / 3;
-                RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
-                DrawMesh.CamerDir.Y += camdifference;
+                RotationZNUD.Value = Math.Max(0, Math.Min((RotationZNUD.Value - differencez), 170));
                 lastClicked = e.Location;
             }
 
@@ -104,7 +103,7 @@ namespace NEA_Procedural_World_Generator
         {
             clicked = false;
             int differencez = (e.Location.X - lastClicked.X) / 2;
-            RotationZNUD.Value = (RotationZNUD.Value - differencez + 360) % 360;
+            RotationZNUD.Value = (RotationZNUD.Value - differencez + 170) % 170;
 
         }
     }

@@ -33,7 +33,8 @@ namespace NEA_Procedural_World_Generator
             tileheight = Form1.UI.TerrainBox.Height / heightmap.GetLength(1);
             half = heightmap.GetLength(0) / 2;
             Scale = scale;
-
+            yoffset = (int)(half * tileheight);
+            xoffset = (int)(half * tilewidth);
 
 
             for (int i = 0; i < 50; i++)
@@ -47,7 +48,7 @@ namespace NEA_Procedural_World_Generator
         {
             Vector2 transformed = Vector2.Transform(new Vector2(V.X - half, V.Z - half), rMatrix);
             int X = (int)(transformed.X * tilewidth * 0.5f + xoffset);
-            int Y = (int)(transformed.Y * tileheight * 0.25f + yoffset - V.Y);
+            int Y = (int)(transformed.Y * tileheight * 0.25f + yoffset - V.Y);//yoffest = half * tilewidth * 0.25f
 
             return new Point(X, Y);
         }
