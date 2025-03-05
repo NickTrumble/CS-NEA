@@ -11,13 +11,13 @@ namespace NEA_Procedural_World_Generator
     public class World
     {
         //public variables
-        public Dictionary<(int x, int y), Chunk> WorldChunks;
+        public Dictionary<(int x, int y), Chunk> WorldChunks;//contains a list of world chunks and their coordinates
         public int Size, Octaves;
         public BaseNoise Noise;
         public static int chunkSize = 32;
         public float Persistance, Scale;
-        public Stack<List<Chunk>> UndoStack, RedoStack;
-        public List<Chunk> temp;
+        public Stack<List<Chunk>> UndoStack, RedoStack;//holds a non-reference copy of the world chunks before/after editing
+        public List<Chunk> temp;//holds last non reference world chunks for undo stack
 
 
 
@@ -30,11 +30,18 @@ namespace NEA_Procedural_World_Generator
 
         public World(int size, int octaves, float pers, float scale)
         {
+            //assigning basic variables
+            Persistance = pers;
+            Octaves = octaves;
+            Scale = scale;
             Size = size;
+            //initialising generic data types
             WorldChunks = new Dictionary<(int x, int y), Chunk>();
             UndoStack = new Stack<List<Chunk>>();
             RedoStack = new Stack<List<Chunk>>();
             temp = new List<Chunk>();
+
+            //initialises noise based on the noise method selected in the options
             if (InterfaceHandler.NoiseMethodd == InterfaceHandler.NoiseState.Perlin)
             {
                 Noise = new PerlinNoise(size * chunkSize, octaves, pers);
@@ -44,9 +51,7 @@ namespace NEA_Procedural_World_Generator
                 Noise = new SimplexNoise(size * chunkSize, octaves, pers);
             }
 
-            Persistance = pers;
-            Octaves = octaves;
-            Scale = scale;
+            
         }
 
         //gives a block a block state through biome and height
@@ -77,9 +82,6 @@ namespace NEA_Procedural_World_Generator
 
         public static Color BlockColourTransformer(Block block)
         {
-            //int index = (int)block.BlockType;
-            //Color c = BlockRGB[index];
-            //return c;
             return TerrainCmap.Interpolate_value(block.Z);
         }
 
