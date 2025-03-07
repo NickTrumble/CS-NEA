@@ -14,6 +14,27 @@ namespace NEA_Procedural_World_Generator
             Color.White
         };
 
+        public static Color[,] ColourSchemes = new Color[4, 5]
+        {
+            {
+                //lava Colour Scheme #0
+                Color.Yellow, Color.Orange, Color.Red, Color.Brown, Color.Black
+            },
+            {
+                //Purple Colour Scheme #1
+                Color.Pink, Color.Violet, Color.Magenta, Color.DarkViolet, Color.Purple
+            },
+            {
+                //Yellow Colour Scheme #2
+                Color.LightYellow, Color.Khaki, Color.Yellow, Color.Goldenrod, Color.Peru
+            },
+            {
+                //Natural Colour Scheme #3
+                Color.DodgerBlue, Color.FromArgb(45, 209, 111), Color.Khaki, 
+                Color.FromArgb(128, 93, 87), Color.White
+            },
+        };
+
         //interpolates between base colours in the cmap depending on the noise value
         public static Color Interpolate_value(float noise_value)
         {

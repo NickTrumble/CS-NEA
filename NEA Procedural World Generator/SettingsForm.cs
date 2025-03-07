@@ -18,19 +18,9 @@ namespace NEA_Procedural_World_Generator
         {
             form = forn;
             InitializeComponent();
-            UpdateColourBox();
         }
 
-        private void UpdateColourBox()
-        {
-            foreach (Control c in Controls)
-            {
-                if (c is PictureBox)
-                {
-                    c.Click += ColourBoxClick;
-                }
-            }
-        }
+
 
         private void BackButton_Click(object sender, EventArgs e)
         {
@@ -83,22 +73,15 @@ namespace NEA_Procedural_World_Generator
             TerrainCmap.cmapC[index] = C;
         }
 
-        private void LavaButton_Click(object sender, EventArgs e)
+        private void GenericPresetPress(object sender, EventArgs e)
         {
-            Color[] ColourScheme = new Color[5]
-            {
-                Color.FromArgb(240, 220, 0),
-                Color.FromArgb(255, 128, 64),
-                Color.FromArgb(255, 0, 0),
-                Color.FromArgb(100, 50, 50),
-                Color.FromArgb(0, 0, 0)
-            };
-                
-                
+            Button btn = (Button)sender;
+            int index = int.Parse(btn.Name.Substring(btn.Name.Length - 1)) - 1;
             for (int i = 0; i < 5; i++)
             {
-                ChangeColour(i, ColourScheme[i]);
+                ChangeColour(i, TerrainCmap.ColourSchemes[index, i]);
             }
         }
+
     }
 }
