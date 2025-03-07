@@ -33,8 +33,8 @@ namespace NEA_Procedural_World_Generator
             tileheight = Form1.UI.TerrainBox.Height / heightmap.GetLength(1);
             half = heightmap.GetLength(0) / 2;
             Scale = scale;
-            yoffset = (int)(half * tileheight);
-            xoffset = (int)(half * tilewidth);
+            yoffset = (int)(2 * Form1.UI.TerrainBox.Height / 3);
+            xoffset = (int)(2 * Form1.UI.TerrainBox.Width / 5);
 
 
             for (int i = 0; i < 50; i++)

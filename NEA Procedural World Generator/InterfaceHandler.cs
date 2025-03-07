@@ -19,13 +19,13 @@ namespace NEA_Procedural_World_Generator
 
         public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
-        public Button PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
+        public Button StartButton, PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
             UndoButton, RedoButton, SaveButton, MeshButton;
         public Label MousePosLabel;
 
         //private variables
         private Form1 Form;
-        private Button StartButton, ExplanationButton, SettingsButton;
+        private Button ExplanationButton, SettingsButton;
         private Label RadiusLabel, IntensityLabel;
 
         private int width;
@@ -222,7 +222,7 @@ namespace NEA_Procedural_World_Generator
 
         public void SettingsButtonClick(object sender, EventArgs e)
         {
-            SettingsForm Settingform = new SettingsForm();
+            SettingsForm Settingform = new SettingsForm(Form);
             Settingform.Show();
         }
 
