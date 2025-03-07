@@ -13,8 +13,8 @@ namespace NEA_Procedural_World_Generator
         #region variables
         //public variables
         public enum NoiseState { Perlin, Simplex }
-        public enum MouseState { Editing, Moving, Selecting, Saving }
-        public static MouseState MouseMode = MouseState.Editing;
+        public enum MouseState { Nothing, Editing, Moving, Selecting, Saving }
+        public static MouseState MouseMode = MouseState.Nothing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
 
         public PictureBox MenuBox, TerrainBox;
@@ -345,7 +345,7 @@ namespace NEA_Procedural_World_Generator
             {
                 TerrainBox.Invalidate();
             }
-
+            MouseMode = MouseState.Editing;
         }
 
         private void ExitButtonClick(object sender, EventArgs e)

@@ -35,9 +35,11 @@ namespace NEA_Procedural_World_Generator
         private void BackButton_Click(object sender, EventArgs e)
         {
             Button StartButton = Form1.UI.StartButton;
-            RedrawTerrain();
             if (!Form1.UI.TerrainBox.Controls.Contains(StartButton))//work
+            {
+                RedrawTerrain();
                 Form1.UI.TerrainBox.Invalidate();
+            }
             this.Close();
             form.BringToFront();
         }
@@ -70,29 +72,32 @@ namespace NEA_Procedural_World_Generator
             colorDialog1.ShowDialog();
             Color c = colorDialog1.Color;
             string name = ((PictureBox)sender).Name;
-            int index = int.Parse(name.Substring(name.Length - 1));
+            int index = int.Parse(name.Substring(name.Length - 1)) - 1;
             ChangeColour(index, c);            
         }
 
         private void ChangeColour(int index, Color C)
         {
-            PictureBox ColourBox = (PictureBox)Controls.Find($"ColourBox{index}", true).FirstOrDefault();
+            PictureBox ColourBox = (PictureBox)Controls.Find($"ColourBox{index + 1}", true).FirstOrDefault();
             ColourBox.BackColor = C;
-            TerrainCmap.cmapC[index - 1] = C;
+            TerrainCmap.cmapC[index] = C;
         }
 
         private void LavaButton_Click(object sender, EventArgs e)
         {
-            Color[] ColourScheme = [
-                Color.FromArgb(240, 220, 190),
-                Color.FromArgb(240, 190, 150),
-                Color.FromArgb(100, 0, 0),
-                Color.FromArgb(30, 10, 10),
+            Color[] ColourScheme = new Color[5]
+            {
+                Color.FromArgb(240, 220, 0),
+                Color.FromArgb(255, 128, 64),
+                Color.FromArgb(255, 0, 0),
+                Color.FromArgb(100, 50, 50),
                 Color.FromArgb(0, 0, 0)
-                ];
+            };
+                
+                
             for (int i = 0; i < 5; i++)
             {
-
+                ChangeColour(i, ColourScheme[i]);
             }
         }
     }
