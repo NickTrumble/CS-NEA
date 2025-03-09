@@ -19,19 +19,21 @@ namespace NEA_Procedural_World_Generator
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
         public static SaveFileType FileType = SaveFileType.OBJ;
 
+        public static int zoom = 2;
+
         public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
         public Button StartButton, PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
             UndoButton, RedoButton, SaveButton, MeshButton;
         public Label MousePosLabel;
+       
 
         //private variables
         private Form1 Form;
-        private Button ExplanationButton, SettingsButton;
+        private Button ExplanationButton, SettingsButton, ZoomInButton, ZoomOutButton;
         private Label RadiusLabel, IntensityLabel;
 
-        private int width;
-        private int height;
+        private int width, height;
         private PointF lastPos;
         private float intensity = 0.01f;
         private int radius = 30;
@@ -131,26 +133,34 @@ namespace NEA_Procedural_World_Generator
             MeshButton = ButtonCreator(MeshButtonClick, new Point(0, MenuBox.Height - 215),
                 "Create Mesh", new Size(100, 25), null, MenuBox);
 
+            //Zoom In buttton
+            ZoomInButton = ButtonCreator(ZoomInButtonClick, new Point(0, MenuBox.Height - 240),
+                "➕", new Size(50, 25), null, MenuBox);
+            
+            //Zoom Out buttton
+            ZoomOutButton = ButtonCreator(ZoomOutButtonClick, new Point(50, MenuBox.Height - 240),
+                "➖", new Size(50, 25), null, MenuBox);
+
 
             //SLIDERS AND LABELS//
             //mouse pos
-            MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 340), "[0, 0] = 0.0", MenuBox);
+            MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 365), "[0, 0] = 0.0", MenuBox);
 
             //world sizez
-            WorldSizeNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 24, 256, 0, 32, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 315), "World Size:", MenuBox);
+            WorldSizeNUD = SliderCreator(new Point(60, MenuBox.Height - 340), 24, 256, 0, 32, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 340), "World Size:", MenuBox);
 
             //Scale
-            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 290), 1f, 16f, 0, 8f, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 290), "Scale:", MenuBox);
+            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 1f, 16f, 0, 8f, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 315), "Scale:", MenuBox);
 
             //Octaves
-            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 265), 1f, 10f, 0, 4, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 265), "Octaves:", MenuBox);
+            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 290), 1f, 10f, 0, 4, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 290), "Octaves:", MenuBox);
 
             //Persistance
-            PersistanceNUD = SliderCreator(new Point(60, MenuBox.Height - 240), 0.1f, 2f, 1, 0.5f, 0.1f, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 240), "Persistance:", MenuBox);
+            PersistanceNUD = SliderCreator(new Point(60, MenuBox.Height - 265), 0.1f, 2f, 1, 0.5f, 0.1f, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 265), "Persistance:", MenuBox);
 
         }
         #endregion
@@ -223,7 +233,17 @@ namespace NEA_Procedural_World_Generator
 
         #region click handlers
 
-
+        private void ZoomInButtonClick(object sender, EventArgs e)
+        {
+            zoom++;
+            TerrainBox.Invalidate();
+        }        
+        
+        private void ZoomOutButtonClick(object sender, EventArgs e)
+        {
+            zoom = Math.Max(zoom - 1, 1);
+            TerrainBox.Invalidate();
+        }
       
 
 
@@ -411,10 +431,8 @@ namespace NEA_Procedural_World_Generator
                 if (MouseMode == MouseState.Moving)
                 {
                     PointF Pos = e.Location;
-                    Form1.xoff -= (Pos.X - lastPos.X) / World.chunkSize;
-                    Form1.yoff -= (Pos.Y - lastPos.Y) / World.chunkSize;
-                    if (Form1.xoff < 0) Form1.xoff = 0;
-                    if (Form1.yoff < 0) Form1.yoff = 0;
+                    Form1.xoff = Math.Max(0, Form1.xoff - (Pos.X - lastPos.X) / (World.chunkSize * zoom));
+                    Form1.yoff = Math.Max(0, Form1.yoff - (Pos.Y - lastPos.Y) / (World.chunkSize * zoom));
 
                     if (Form1.xoff > Form1.world.Size - TerrainBox.Width / 32f) Form1.xoff = Form1.world.Size - TerrainBox.Width / 32f;
                     if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
@@ -494,10 +512,12 @@ namespace NEA_Procedural_World_Generator
 
         public void PopulateTerrainBox(object sender, PaintEventArgs e)
         {
-            int startx = (int)Form1.xoff;
-            int starty = (int)Form1.yoff;
-            int endx = (int)(Form1.xoff + 24);
-            int endy = (int)(Form1.yoff + 16);
+            int startx = BaseNoise.fastfloor(Form1.xoff);
+            int starty = BaseNoise.fastfloor(Form1.yoff);
+            int endx = (int)Math.Ceiling(Form1.xoff + (24 / zoom)) + zoom;
+            int endy = (int)Math.Ceiling(Form1.yoff + (16 / zoom)) + zoom;
+
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             if (!TerrainBox.Controls.Contains(StartButton))
             {
@@ -510,13 +530,15 @@ namespace NEA_Procedural_World_Generator
                         Bitmap bmp = Form1.world.WorldChunks[(indexi, indexj)].Bmp;
                         lock (bmp)
                         {
-                            e.Graphics.DrawImage(bmp, new PointF(World.chunkSize * (i - Form1.xoff), World.chunkSize * (j - Form1.yoff)));
+                            e.Graphics.DrawImage(bmp, World.chunkSize * (i - Form1.xoff) * zoom, World.chunkSize * (j - Form1.yoff) * zoom,
+                                (0.5f + World.chunkSize) * zoom, (0.5f + World.chunkSize) * zoom);
                         }
 
                     }
                 }
 
             }
+
 
         }
 

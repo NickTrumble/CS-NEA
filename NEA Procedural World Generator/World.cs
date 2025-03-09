@@ -127,8 +127,8 @@ namespace NEA_Procedural_World_Generator
                     if (distance < radius2)
                     {
                         float incVal = intensity * (1 - (distance / (radius2)));
-                        int X = Math.Min((int)(i / chunkSize), Size - 1);
-                        int Y = Math.Min((int)(j / chunkSize), Size - 1);
+                        int X = Math.Min((i / chunkSize), Size - 1);
+                        int Y = Math.Min((j / chunkSize), Size - 1);
 
                         //get chunk reference
                         Chunk chunk = Form1.world.WorldChunks[(X, Y)];
