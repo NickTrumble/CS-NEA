@@ -1,0 +1,8 @@
+#ignore .ply files
+*.ply
+
+#ignore .obj files
+*.obj
+
+#ignore slt files
+*.slt
