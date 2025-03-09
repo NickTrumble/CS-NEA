@@ -32,6 +32,5 @@ namespace NEA_Procedural_World_Generator
 //add to mesh form 
 //mass optimisation
 //save options e.g.Colour?    
-//manual
 //zooming**
 //smaller worlds
