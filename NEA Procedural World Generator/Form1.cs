@@ -17,7 +17,6 @@ namespace NEA_Procedural_World_Generator
 
 
         //private variables
-
         public Form1(World inWorld = null)
         {
             InitializeComponent();
@@ -30,16 +29,9 @@ namespace NEA_Procedural_World_Generator
     }
 }
 //GOALS
-//make mesh form
+//add to mesh form 
 //mass optimisation
-//save options e.g. other formats plus select region
-//manual and settings:
-//  instructions
-//  cmaps and colour blind
-//  font sizes
-
-//loading bar/symbol / make saving async
-//zooming
+//save options e.g.Colour?    
+//manual
+//zooming**
 //smaller worlds
-//fix ui design
-//selecting visuals

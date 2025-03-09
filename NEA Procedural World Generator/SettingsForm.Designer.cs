@@ -46,6 +46,11 @@
             this.PresetButton2 = new System.Windows.Forms.Button();
             this.PresetButton3 = new System.Windows.Forms.Button();
             this.PresetButton4 = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.FileTypeListBox = new System.Windows.Forms.ListBox();
+            this.CurrentFileLabel = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.FileNameTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.ColourBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColourBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColourBox3)).BeginInit();
@@ -56,7 +61,7 @@
             // BackButton
             // 
             this.BackButton.Location = new System.Drawing.Point(0, 0);
-            this.BackButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BackButton.Margin = new System.Windows.Forms.Padding(2);
             this.BackButton.Name = "BackButton";
             this.BackButton.Size = new System.Drawing.Size(97, 21);
             this.BackButton.TabIndex = 0;
@@ -127,7 +132,7 @@
             // ColourBox1
             // 
             this.ColourBox1.Location = new System.Drawing.Point(49, 46);
-            this.ColourBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ColourBox1.Margin = new System.Windows.Forms.Padding(2);
             this.ColourBox1.Name = "ColourBox1";
             this.ColourBox1.Size = new System.Drawing.Size(17, 16);
             this.ColourBox1.TabIndex = 7;
@@ -137,7 +142,7 @@
             // ColourBox2
             // 
             this.ColourBox2.Location = new System.Drawing.Point(49, 67);
-            this.ColourBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ColourBox2.Margin = new System.Windows.Forms.Padding(2);
             this.ColourBox2.Name = "ColourBox2";
             this.ColourBox2.Size = new System.Drawing.Size(17, 16);
             this.ColourBox2.TabIndex = 8;
@@ -147,7 +152,7 @@
             // ColourBox3
             // 
             this.ColourBox3.Location = new System.Drawing.Point(49, 86);
-            this.ColourBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ColourBox3.Margin = new System.Windows.Forms.Padding(2);
             this.ColourBox3.Name = "ColourBox3";
             this.ColourBox3.Size = new System.Drawing.Size(17, 16);
             this.ColourBox3.TabIndex = 9;
@@ -157,7 +162,7 @@
             // ColourBox4
             // 
             this.ColourBox4.Location = new System.Drawing.Point(49, 107);
-            this.ColourBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ColourBox4.Margin = new System.Windows.Forms.Padding(2);
             this.ColourBox4.Name = "ColourBox4";
             this.ColourBox4.Size = new System.Drawing.Size(17, 16);
             this.ColourBox4.TabIndex = 10;
@@ -167,7 +172,7 @@
             // ColourBox5
             // 
             this.ColourBox5.Location = new System.Drawing.Point(49, 127);
-            this.ColourBox5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ColourBox5.Margin = new System.Windows.Forms.Padding(2);
             this.ColourBox5.Name = "ColourBox5";
             this.ColourBox5.Size = new System.Drawing.Size(17, 16);
             this.ColourBox5.TabIndex = 11;
@@ -187,7 +192,7 @@
             // PresetButton1
             // 
             this.PresetButton1.Location = new System.Drawing.Point(96, 56);
-            this.PresetButton1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PresetButton1.Margin = new System.Windows.Forms.Padding(2);
             this.PresetButton1.Name = "PresetButton1";
             this.PresetButton1.Size = new System.Drawing.Size(50, 19);
             this.PresetButton1.TabIndex = 13;
@@ -198,7 +203,7 @@
             // PresetButton2
             // 
             this.PresetButton2.Location = new System.Drawing.Point(96, 79);
-            this.PresetButton2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PresetButton2.Margin = new System.Windows.Forms.Padding(2);
             this.PresetButton2.Name = "PresetButton2";
             this.PresetButton2.Size = new System.Drawing.Size(50, 19);
             this.PresetButton2.TabIndex = 14;
@@ -209,7 +214,7 @@
             // PresetButton3
             // 
             this.PresetButton3.Location = new System.Drawing.Point(96, 101);
-            this.PresetButton3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PresetButton3.Margin = new System.Windows.Forms.Padding(2);
             this.PresetButton3.Name = "PresetButton3";
             this.PresetButton3.Size = new System.Drawing.Size(50, 19);
             this.PresetButton3.TabIndex = 15;
@@ -220,7 +225,7 @@
             // PresetButton4
             // 
             this.PresetButton4.Location = new System.Drawing.Point(96, 124);
-            this.PresetButton4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PresetButton4.Margin = new System.Windows.Forms.Padding(2);
             this.PresetButton4.Name = "PresetButton4";
             this.PresetButton4.Size = new System.Drawing.Size(50, 19);
             this.PresetButton4.TabIndex = 16;
@@ -228,12 +233,66 @@
             this.PresetButton4.UseVisualStyleBackColor = true;
             this.PresetButton4.Click += new System.EventHandler(this.GenericPresetPress);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(198, 23);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(89, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Saving File Type:";
+            // 
+            // FileTypeListBox
+            // 
+            this.FileTypeListBox.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.FileTypeListBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.FileTypeListBox.FormattingEnabled = true;
+            this.FileTypeListBox.Items.AddRange(new object[] {
+            ".OBJ",
+            ".PLY"});
+            this.FileTypeListBox.Location = new System.Drawing.Point(201, 67);
+            this.FileTypeListBox.Name = "FileTypeListBox";
+            this.FileTypeListBox.Size = new System.Drawing.Size(120, 26);
+            this.FileTypeListBox.TabIndex = 19;
+            this.FileTypeListBox.SelectedIndexChanged += new System.EventHandler(this.FileTypeListBox_SelectedIndexChanged);
+            // 
+            // CurrentFileLabel
+            // 
+            this.CurrentFileLabel.AutoSize = true;
+            this.CurrentFileLabel.Location = new System.Drawing.Point(198, 46);
+            this.CurrentFileLabel.Name = "CurrentFileLabel";
+            this.CurrentFileLabel.Size = new System.Drawing.Size(44, 13);
+            this.CurrentFileLabel.TabIndex = 20;
+            this.CurrentFileLabel.Text = "Current:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(198, 96);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(57, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "File Name:";
+            // 
+            // FileNameTextBox
+            // 
+            this.FileNameTextBox.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.FileNameTextBox.Location = new System.Drawing.Point(201, 112);
+            this.FileNameTextBox.Name = "FileNameTextBox";
+            this.FileNameTextBox.Size = new System.Drawing.Size(100, 20);
+            this.FileNameTextBox.TabIndex = 22;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
             this.ClientSize = new System.Drawing.Size(333, 182);
+            this.Controls.Add(this.FileNameTextBox);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.CurrentFileLabel);
+            this.Controls.Add(this.FileTypeListBox);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.PresetButton4);
             this.Controls.Add(this.PresetButton3);
             this.Controls.Add(this.PresetButton2);
@@ -253,7 +312,7 @@
             this.Controls.Add(this.BackButton);
             this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "SettingsForm";
             this.Text = "SettingsForm";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
@@ -287,5 +346,10 @@
         private System.Windows.Forms.Button PresetButton2;
         private System.Windows.Forms.Button PresetButton3;
         private System.Windows.Forms.Button PresetButton4;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ListBox FileTypeListBox;
+        private System.Windows.Forms.Label CurrentFileLabel;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox FileNameTextBox;
     }
 }

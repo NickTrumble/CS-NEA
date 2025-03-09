@@ -13,7 +13,7 @@ namespace NEA_Procedural_World_Generator
         public float[,] heightmap { get; set; }
         public int xoffset = 300;
         public int yoffset = 200;
-        Color[] Colours = new Color[50];
+        public static Color[] Colours = new Color[50];
 
 
         public int xLow, xHigh, yLow, yHigh, row, col, tilewidth, tileheight, Scale, half;

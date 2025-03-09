@@ -91,7 +91,6 @@ namespace NEA_Procedural_World_Generator
         public void WorldGeneration()
         {
             List<Chunk> chunks = new List<Chunk>();
-
             for (int i = 0; i < Form1.world.Size; i++)
             {
                 for (int j = 0; j < Form1.world.Size; j++)
@@ -214,6 +213,7 @@ namespace NEA_Procedural_World_Generator
         public static Chunk ChunkGeneration(Chunk chunk)
         {
             float freq = Form1.world.Scale;
+            
             for (int i = 0; i < World.chunkSize; i++)
             {
                 for (int j = 0; j < World.chunkSize; j++)

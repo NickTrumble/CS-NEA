@@ -10,36 +10,37 @@ namespace NEA_Procedural_World_Generator
     public class OBJExport
     {
         Dictionary<(int x, int y), Chunk> inTerrain;
-        World world;
-        public float[,] terrain { get; set; }
-        public int row { get; set; }
-        public int col { get; set; }
-        public float MeshScale { get; set; }
+        World World;
+        public float[,] Terrain;
+        public static string FileName = "TerrainMesh";
+        public int row;
+        public int col;
+        public float MeshScale;
         public float[,] ATerrain;
         //constructor
         public OBJExport(World inworld, float Meshscale)
         {
-            world = inworld;
-            inTerrain = world.WorldChunks;
+            World = inworld;
+            inTerrain = World.WorldChunks;
             MeshScale = Meshscale;
 
         }
 
         public async Task SaveAll(string path)//save whole woruld
         {
-            row = col = world.Size;
-            ATerrain = world.DictionaryToArray(inTerrain, row, col, 0, 0);
-            await ExportOBJ(path);
+            row = col = World.Size;
+            ATerrain = World.DictionaryToArray(inTerrain, row, col, 0, 0);
+            await Task.Run(() => ExportOBJ(path));
         }
 
-        public async void SaveRegion(int xlow, int ylow, int xhigh, int yhigh, string path)//save region selected
+        public async Task SaveRegion(int xlow, int ylow, int xhigh, int yhigh, string path)//save region selected
         {
             inTerrain = (Dictionary<(int x, int y), Chunk>)inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh
                                                                             && c.Key.y >= ylow && c.Key.y <= yhigh);
             row = xhigh - xlow + 1;
             col = yhigh - ylow + 1;
-            ATerrain = world.DictionaryToArray(inTerrain, row, col, xlow, ylow);
-            await ExportOBJ(path);
+            ATerrain = World.DictionaryToArray(inTerrain, row, col, xlow, ylow);
+            await Task.Run(() => ExportOBJ(path));
         }
 
 
@@ -90,21 +91,56 @@ namespace NEA_Procedural_World_Generator
         public async Task ExportOBJ(string path)
         {
             int multiplyer = 2;
-            StreamWriter f = new StreamWriter(path + "\\TerrainMesh.obj");
             List<(float, float, float)> vertices = Generate_vertices();
             List<(int, int, int)> faces = Gen_faces();
-            //MessageBox.Show($"faces:{faces.Count()} vertices:{vertices.Count()}");
-
-            foreach (var v in vertices)
+            switch (InterfaceHandler.FileType)
             {
-                await f.WriteLineAsync($"v {v.Item1} {v.Item2 * multiplyer} {v.Item3}");
-            }
+                case InterfaceHandler.SaveFileType.OBJ://obj
+                    using (StreamWriter f = new StreamWriter(path + $"\\{FileName}.obj"))
+                    {
+                        foreach (var v in vertices)
+                        {
+                            await f.WriteLineAsync($"v {v.Item1} {v.Item2 * multiplyer} {v.Item3}");
+                        }
 
-            foreach (var face in faces)
-            {
-                await f.WriteLineAsync($"f {face.Item1} {face.Item2} {face.Item3}");
-            }
-            _ = MessageBox.Show("saved");
+                        foreach (var face in faces)
+                        {
+                            await f.WriteLineAsync($"f {face.Item1} {face.Item2} {face.Item3}");
+                        }
+                    }
+
+
+                    break;
+                default://ply
+                    using (StreamWriter f = new StreamWriter(path + $"\\{FileName}.ply"))
+                    {
+                        f.WriteLine("ply");
+                        f.WriteLine("format ascii 1.0");
+                        f.WriteLine($"element vertex {vertices.Count}");
+                        f.WriteLine("property float x");
+                        f.WriteLine("property float y");
+                        f.WriteLine("property float z");
+                        f.WriteLine($"element face {faces.Count}");
+                        f.WriteLine("property list uchar int vertex_indices");
+                        f.WriteLine("end_header");
+
+                        foreach (var v in vertices)
+                        {
+                            await f.WriteLineAsync($"{v.Item1} {v.Item2 * multiplyer} {v.Item3}");
+                        }
+
+                        foreach (var face in faces)
+                        {
+                            await f.WriteLineAsync($"3 {face.Item1 - 1} {face.Item2 - 1} {face.Item3 - 1}");
+                        }
+
+                    }
+
+                    break;
+            }           
+
+            
+            MessageBox.Show($"Saved as .{InterfaceHandler.FileType}!");
 
         }
     }

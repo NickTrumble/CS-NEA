@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace NEA_Procedural_World_Generator
 {
@@ -144,6 +145,7 @@ namespace NEA_Procedural_World_Generator
             Num_samples = size;
             octaves = octave;
             persistance = pers;
+            
         }
 
         //Dot product between gradiant vector g and position vector (x, y)
@@ -167,7 +169,7 @@ namespace NEA_Procedural_World_Generator
                 frequency *= 2f;//increase frequency for each octave
             }
             //return cumulative noise generated divided by the cumulative total posible 
-            return noise / max;
+            return (noise / max);
 
         }
         //virtual function for other functions in this class to refer to
@@ -211,4 +213,5 @@ namespace NEA_Procedural_World_Generator
             return Shuffle_table(size, table);
         }
     }
+
 }

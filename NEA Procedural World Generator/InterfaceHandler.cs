@@ -12,10 +12,12 @@ namespace NEA_Procedural_World_Generator
 
         #region variables
         //public variables
+        public enum SaveFileType { OBJ, PLY }
         public enum NoiseState { Perlin, Simplex }
         public enum MouseState { Nothing, Editing, Moving, Selecting, Saving }
         public static MouseState MouseMode = MouseState.Nothing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
+        public static SaveFileType FileType = SaveFileType.OBJ;
 
         public PictureBox MenuBox, TerrainBox;
         public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
@@ -208,6 +210,7 @@ namespace NEA_Procedural_World_Generator
             };
             nud.Controls[0].Visible = false;
             T.Controls.Add(nud);
+            nud.BringToFront();
             return nud;
         } 
 
@@ -219,6 +222,11 @@ namespace NEA_Procedural_World_Generator
         #endregion
 
         #region click handlers
+
+
+      
+
+
 
         public void SettingsButtonClick(object sender, EventArgs e)
         {
@@ -234,9 +242,19 @@ namespace NEA_Procedural_World_Generator
 
         public void MeshButtonClick(object sender, EventArgs e)
         {
-            Form.Text = "Click one corner of area to convert to mesh form:";
-            MouseMode = MouseState.Selecting;
-            MeshButton.Text = "Cancel";
+            if (MouseMode == MouseState.Selecting)
+            {
+                Form.Text = "Procedural Terrain Generator & Editor";
+                MouseModeButtonClick(sender, e);
+                MeshButton.Text = "Mesh Form";
+            }
+            else
+            {
+                Form.Text = "Click one corner of area to convert to mesh form:";
+                MouseMode = MouseState.Selecting;
+                MeshButton.Text = "Cancel";
+            }
+            
         }
 
         public async void SaveButtonClick(object sender, EventArgs e)
@@ -369,7 +387,7 @@ namespace NEA_Procedural_World_Generator
             {
                 //if edit mode, :
                 intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
-                Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
+                Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity / 10f);
                 TerrainBox.Invalidate();
             }
             else if (MouseMode == MouseState.Moving)
@@ -405,7 +423,7 @@ namespace NEA_Procedural_World_Generator
                 }
                 else if (MouseMode == MouseState.Editing)
                 {
-                    Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity);
+                    Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity / 10f);
                     TerrainBox.Invalidate();
                 }
 
@@ -436,7 +454,7 @@ namespace NEA_Procedural_World_Generator
                 (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
                                                (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
                 DrawMesh MeshDrawer = new DrawMesh(Form1.world, 200, CornerChunk.x, SecondCorner.x, CornerChunk.y, SecondCorner.y);
-                MeshForm mp = new MeshForm(MeshDrawer);
+                MeshForm mp = new MeshForm(MeshDrawer, Form);
                 mp.Show();
                 Form.Hide();
             }
