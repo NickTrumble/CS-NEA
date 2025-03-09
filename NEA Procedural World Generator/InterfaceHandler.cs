@@ -446,7 +446,7 @@ namespace NEA_Procedural_World_Generator
                 }
 
             }
-            if (!TerrainBox.Controls.Contains(StartButton))
+            if (!TerrainBox.Controls.Contains(StartButton))//add for zoom
             {
                 int size = Form1.world.Size;
                 int mousex = Math.Max(0, Math.Min(size * World.chunkSize, (int)(e.Location.X + (Form1.xoff * World.chunkSize))));

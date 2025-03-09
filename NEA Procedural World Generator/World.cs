@@ -105,18 +105,21 @@ namespace NEA_Procedural_World_Generator
             Form1.UI.TerrainBox.Invalidate();
         }
 
-        public void EditWorld(int x, int y, int radius, float intensity)//split up into other functions
+        public void EditWorld(int x, int y, int radius, float intensity)//split up into other functions//add for zoom
         {
-            float offsetx = (Form1.xoff * chunkSize);
-            float offsety = (Form1.yoff * chunkSize);
+            x = x / InterfaceHandler.zoom; //adjust for zoom
+            y = y / InterfaceHandler.zoom;
+
+            float offsetx = (Form1.xoff * chunkSize / InterfaceHandler.zoom);
+            float offsety = (Form1.yoff * chunkSize / InterfaceHandler.zoom);
 
             int clickedx = (int)(x + offsetx);
 
             int xmin = (int)Math.Max(0, x - radius + offsetx);
             int ymin = (int)Math.Max(0, y - radius + offsety);
 
-            int xmax = (int)Math.Min(chunkSize * Size, x + radius + offsetx);
-            int ymax = (int)Math.Min(chunkSize * Size, y + radius + offsety);
+            int xmax = (int)Math.Min(chunkSize * Size / InterfaceHandler.zoom, x + radius + offsetx);
+            int ymax = (int)Math.Min(chunkSize * Size / InterfaceHandler.zoom, y + radius + offsety);
 
             int radius2 = radius * radius;
             Parallel.For(xmin, xmax, i =>
@@ -127,14 +130,14 @@ namespace NEA_Procedural_World_Generator
                     if (distance < radius2)
                     {
                         float incVal = intensity * (1 - (distance / (radius2)));
-                        int X = Math.Min((i / chunkSize), Size - 1);
-                        int Y = Math.Min((j / chunkSize), Size - 1);
+                        int X = Math.Min((i / chunkSize) / InterfaceHandler.zoom, Size - 1);
+                        int Y = Math.Min((j / chunkSize) / InterfaceHandler.zoom, Size - 1);
 
                         //get chunk reference
                         Chunk chunk = Form1.world.WorldChunks[(X, Y)];
                         //get block reference
-                        int blockx = i % chunkSize;
-                        int blocky = j % chunkSize;
+                        int blockx = (i % chunkSize) / InterfaceHandler.zoom;
+                        int blocky = (j % chunkSize) / InterfaceHandler.zoom;
                         Block block = chunk.ChunkBlock[(blockx, blocky)];
                         block.Z += incVal;
 
