@@ -6,3 +6,6 @@
 
 #ignore slt files
 *.slt
+
+#ignore silly little files
+.vs/
