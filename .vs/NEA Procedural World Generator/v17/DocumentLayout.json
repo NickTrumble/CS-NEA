@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\nickt\\source\\repos\\CS-NEA\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|C:\\Users\\nickt\\source\\repos\\CS-NEA\\nea procedural world generator\\interfacehandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|c:\\users\\nickt\\source\\repos\\cs-nea\\nea procedural world generator\\interfacehandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|solutionrelative:nea procedural world generator\\interfacehandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|c:\\users\\nickt\\source\\repos\\cs-nea\\nea procedural world generator\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|C:\\Users\\nickt\\source\\repos\\CS-NEA\\nea procedural world generator\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D24DDE58-AAB2-4A3E-9A18-3D11445343FC}|NEA Procedural World Generator\\NEA Procedural World Generator.csproj|solutionrelative:nea procedural world generator\\settingsform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -41,8 +41,7 @@
               "ToolTip": "C:\\Users\\nickt\\source\\repos\\CS-NEA\\NEA Procedural World Generator\\SettingsForm.cs [Design]",
               "RelativeToolTip": "NEA Procedural World Generator\\SettingsForm.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T11:35:00.75Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-03-07T11:35:00.75Z"
             },
             {
               "$type": "Document",
@@ -54,8 +53,7 @@
               "RelativeToolTip": "NEA Procedural World Generator\\World.cs",
               "ViewState": "AQIAAPAAAAAAAAAAAAAjwPgAAAAbAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T11:25:06.126Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-07T11:25:06.126Z"
             },
             {
               "$type": "Document",
@@ -65,7 +63,7 @@
               "RelativeDocumentMoniker": "NEA Procedural World Generator\\InterfaceHandler.cs",
               "ToolTip": "C:\\Users\\nickt\\source\\repos\\CS-NEA\\NEA Procedural World Generator\\InterfaceHandler.cs",
               "RelativeToolTip": "NEA Procedural World Generator\\InterfaceHandler.cs",
-              "ViewState": "AQIAAAkAAAAAAAAAAAAAABAAAAA/AAAA",
+              "ViewState": "AQIAALcBAAAAAAAAAAAYwMgBAAA8AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-07T09:21:12.658Z",
               "EditorCaption": ""
@@ -80,8 +78,7 @@
               "RelativeToolTip": "NEA Procedural World Generator\\SettingsForm.cs",
               "ViewState": "AQIAAB4AAAAAAAAAAAAmwCkAAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-06T13:55:53.173Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-06T13:55:53.173Z"
             },
             {
               "$type": "Document",

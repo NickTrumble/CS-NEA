@@ -38,3 +38,4 @@ C:\Users\nickt\Source\Repos\CS-NEA\NEA Procedural World Generator\obj\Debug\NEA 
 C:\Users\nickt\source\repos\CS-NEA\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.SettingsForm.resources
 C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.SettingsForm.resources
 C:\Users\iantr\source\repos\NEA Procedural World Generator\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.HelpForm.resources
+C:\Users\nickt\source\repos\CS-NEA\NEA Procedural World Generator\obj\Debug\NEA_Procedural_World_Generator.HelpForm.resources

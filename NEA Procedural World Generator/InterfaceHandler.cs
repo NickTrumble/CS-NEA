@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -434,8 +435,9 @@ namespace NEA_Procedural_World_Generator
                     Form1.xoff = Math.Max(0, Form1.xoff - (Pos.X - lastPos.X) / (World.chunkSize * zoom));
                     Form1.yoff = Math.Max(0, Form1.yoff - (Pos.Y - lastPos.Y) / (World.chunkSize * zoom));
 
-                    if (Form1.xoff > Form1.world.Size - TerrainBox.Width / 32f) Form1.xoff = Form1.world.Size - TerrainBox.Width / 32f;
-                    if (Form1.yoff > Form1.world.Size - TerrainBox.Height / 32f) Form1.yoff = Form1.world.Size - TerrainBox.Height / 32f;
+                    //offsets have a max value of the world size in chunks - chunks that fit in the terrain box
+                    if (Form1.xoff > Form1.world.Size - TerrainBox.Width / (32f * zoom)) Form1.xoff = Form1.world.Size - TerrainBox.Width / (32f * zoom);
+                    if (Form1.yoff > Form1.world.Size - TerrainBox.Height / (32f * zoom)) Form1.yoff = Form1.world.Size - TerrainBox.Height / (32f * zoom);
                     TerrainBox.Invalidate();
                     lastPos = Pos;
                 }
@@ -449,8 +451,10 @@ namespace NEA_Procedural_World_Generator
             if (!TerrainBox.Controls.Contains(StartButton))//add for zoom
             {
                 int size = Form1.world.Size;
-                int mousex = Math.Max(0, Math.Min(size * World.chunkSize, (int)(e.Location.X + (Form1.xoff * World.chunkSize))));
-                int mouseu = Math.Max(0, Math.Min((int)(e.Location.Y + (Form1.yoff * World.chunkSize)), size * World.chunkSize));
+                //offsets already account for zoom when moving, so only change mouse coordinates
+                int mousex = Math.Max(0, Math.Min((int)(e.Location.X / zoom + (Form1.xoff * World.chunkSize)), size * World.chunkSize));
+                int mouseu = Math.Max(0, Math.Min((int)(e.Location.Y / zoom + (Form1.yoff * World.chunkSize)), size * World.chunkSize));
+                //get block elevation at block hovering over
                 float elevation = Form1.world.WorldChunks[(Math.Min(mousex / World.chunkSize, size - 1), Math.Min(size - 1, mouseu / World.chunkSize))]
                     .ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize, mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
                 MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
