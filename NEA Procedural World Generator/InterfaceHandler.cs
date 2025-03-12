@@ -12,36 +12,40 @@ namespace NEA_Procedural_World_Generator
     {
 
         #region variables
-        //public variables
+        //public enumerators
         public enum SaveFileType { OBJ, PLY }
         public enum NoiseState { Perlin, Simplex }
         public enum MouseState { Nothing, Editing, Moving, Selecting, Saving }
+        public enum DraggingState { None, Dragging }
+
+        //public controls
+        public PictureBox MenuBox, TerrainBox;
+        public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD, IslandNUD;
+        public Button StartButton, PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
+            UndoButton, RedoButton, SaveButton, MeshButton;
+
+        //public variables
         public static MouseState MouseMode = MouseState.Nothing;
         public static NoiseState NoiseMethodd = NoiseState.Perlin;
         public static SaveFileType FileType = SaveFileType.OBJ;
 
         public static int zoom = 2;
+        public int width, height;
 
-        public PictureBox MenuBox, TerrainBox;
-        public NumericUpDown WorldSizeNUD, ScaleNUD, OctavesNUD, PersistanceNUD, ColourNumNUD;
-        public Button StartButton, PerlinGen, SimplexGen, EditWorldButton, MoveWorldButton, MouseModeButton,
-            UndoButton, RedoButton, SaveButton, MeshButton;
-        public Label MousePosLabel;
-       
-
-        //private variables
+        //private controls
         private Form1 Form;
         private Button ExplanationButton, SettingsButton, ZoomInButton, ZoomOutButton;
-        private Label RadiusLabel, IntensityLabel;
+        private Label RadiusLabel, IntensityLabel, MousePosLabel;
 
-        private int width, height;
+        //private variables
+        private DraggingState Drag = DraggingState.None;
+
+        private (int x, int y) CornerChunk;
         private PointF lastPos;
         private float intensity = 0.01f;
         private int radius = 30;
-        private (int x, int y) CornerChunk;
 
-        private enum DraggingState { None, Dragging }
-        private DraggingState Drag = DraggingState.None;
+
         #endregion
 
         #region Setup
@@ -54,7 +58,7 @@ namespace NEA_Procedural_World_Generator
         }
 
         //Generates and initialises all of the interfaces
-        private void InitialiseInterface()
+        public void InitialiseInterface()
         {
             Form.Size = new Size(width, height);
             Form.Text = "Procedural Terrain Generator & Editor";
@@ -85,15 +89,19 @@ namespace NEA_Procedural_World_Generator
 
             Form.Controls.Add(TerrainBox);
             //generates first world
-            StartButton = new Button
+            if (!Form1.Started)
             {
-                Location = new Point((TerrainBox.Width / 2) - 60, (TerrainBox.Height / 2) - 40),
-                Size = new Size(120, 80),
-                Text = "Load World"
-            };
-            StartButton.BringToFront();
-            StartButton.Click += StartButtonClick;
-            TerrainBox.Controls.Add(StartButton);
+                StartButton = new Button
+                {
+                    Location = new Point((TerrainBox.Width / 2) - 60, (TerrainBox.Height / 2) - 40),
+                    Size = new Size(120, 80),
+                    Text = "Load World"
+                };
+                StartButton.BringToFront();
+                StartButton.Click += StartButtonClick;
+                TerrainBox.Controls.Add(StartButton);
+            }
+            
 
             //BUTTONS//
             //regenerate perlin
@@ -145,24 +153,29 @@ namespace NEA_Procedural_World_Generator
 
             //SLIDERS AND LABELS//
             //mouse pos
-            MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 365), "[0, 0] = 0.0", MenuBox);
+            MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 390), "[0, 0] = 0.0", MenuBox);
 
             //world sizez
-            WorldSizeNUD = SliderCreator(new Point(60, MenuBox.Height - 340), 24, 256, 0, 32, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 340), "World Size:", MenuBox);
+            WorldSizeNUD = SliderCreator(new Point(60, MenuBox.Height - 365), 24, 256, 0, 32, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 365), "World Size:", MenuBox);
 
             //Scale
-            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 1f, 16f, 0, 8f, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 315), "Scale:", MenuBox);
+            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 340), 1f, 16f, 0, 8f, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 340), "Scale:", MenuBox);
 
             //Octaves
-            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 290), 1f, 10f, 0, 4, 1, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 290), "Octaves:", MenuBox);
+            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 1f, 10f, 0, 4, 1, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 315), "Octaves:", MenuBox);
 
             //Persistance
-            PersistanceNUD = SliderCreator(new Point(60, MenuBox.Height - 265), 0.1f, 2f, 1, 0.5f, 0.1f, MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 265), "Persistance:", MenuBox);
+            PersistanceNUD = SliderCreator(new Point(60, MenuBox.Height - 290), 0.1f, 2f, 1, 0.5f, 0.1f, MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 290), "Persistance:", MenuBox);
 
+            //Island scaler
+            IslandNUD = SliderCreator(new Point(60, MenuBox.Height - 265), T: MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 265), "Island Shape:", MenuBox);
+
+            
         }
         #endregion
 
@@ -246,9 +259,6 @@ namespace NEA_Procedural_World_Generator
             TerrainBox.Invalidate();
         }
       
-
-
-
         public void SettingsButtonClick(object sender, EventArgs e)
         {
             SettingsForm Settingform = new SettingsForm(Form);
@@ -380,6 +390,7 @@ namespace NEA_Procedural_World_Generator
                 Form1.world = new World((int)WorldSizeNUD.Value, (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));
                 //start function/timer
                 Form1.world.WorldGeneration();
+                Form1.Started = true;
             } else
             {
                 TerrainBox.Invalidate();
