@@ -46,8 +46,10 @@ namespace NEA_Procedural_World_Generator
     }
 }
 //GOALS
-//add to mesh form 
+//add to mesh form (terracing)(more buttons)
 //mass optimisation
 //save options e.g.Colour?    
 //smaller worlds
-//add island slider
+//add island slider /find old version
+//add numbers to objectives
+//adjust colours / bounds

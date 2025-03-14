@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization.Configuration;
 
 namespace NEA_Procedural_World_Generator
 {
@@ -35,14 +36,14 @@ namespace NEA_Procedural_World_Generator
         //private controls
         private Form1 Form;
         private Button ExplanationButton, SettingsButton, ZoomInButton, ZoomOutButton;
-        private Label RadiusLabel, IntensityLabel, MousePosLabel;
+        private Label RadiusLabel, IntensityLabel, MousePosLabel, TitleLabel, LogoLabel;
 
         //private variables
         private DraggingState Drag = DraggingState.None;
 
         private (int x, int y) CornerChunk;
         private PointF lastPos;
-        private float intensity = 0.01f;
+        private float intensity = 0.03f;
         private int radius = 30;
 
 
@@ -100,6 +101,16 @@ namespace NEA_Procedural_World_Generator
                 StartButton.BringToFront();
                 StartButton.Click += StartButtonClick;
                 TerrainBox.Controls.Add(StartButton);
+
+                //Title on start
+                TitleLabel = new Label
+                {
+                    Location = new Point(TerrainBox.Width / 5, TerrainBox.Height / 4),
+                    Text = "Procedural Terrain Generator",
+                    Font = new Font("Arial", 26, FontStyle.Bold),
+                    Size = new Size(TerrainBox.Width, 50),
+                };
+                TerrainBox.Controls.Add(TitleLabel);
             }
             
 
@@ -152,6 +163,18 @@ namespace NEA_Procedural_World_Generator
 
 
             //SLIDERS AND LABELS//
+
+            //Top Left title
+            LogoLabel = new Label
+            {
+                Location = new Point(0, 0),
+                Size = new Size(MenuBox.Width, 60),
+                Text = "Procedural Terrain Generator",
+                Font = new Font("Arial", 12),
+                TextAlign = ContentAlignment.TopCenter,
+            };
+            MenuBox.Controls.Add(LogoLabel);
+
             //mouse pos
             MousePosLabel = LabelCreator(new Point(0, MenuBox.Height - 390), "[0, 0] = 0.0", MenuBox);
 
@@ -385,6 +408,7 @@ namespace NEA_Procedural_World_Generator
         {
             //remove the start button from controls
             TerrainBox.Controls.Remove(StartButton);
+            TerrainBox.Controls.Remove(TitleLabel);
             if (Form1.world == null)
             {
                 Form1.world = new World((int)WorldSizeNUD.Value, (int)OctavesNUD.Value, (float)PersistanceNUD.Value, (float)(ScaleNUD.Value * 0.001M));

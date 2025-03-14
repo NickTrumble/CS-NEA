@@ -16,6 +16,7 @@ namespace NEA_Procedural_World_Generator
         DrawMesh MeshDrawer;
         private Point lastClicked;
         bool clicked = false;
+        private Label LogoLabel;
         
         public MeshForm(DrawMesh dm, Form1 forn)
         {
@@ -71,6 +72,17 @@ namespace NEA_Procedural_World_Generator
             //Save Button
             SaveButton = InterfaceHandler.ButtonCreator(SaveButtonClick, new Point(0, MenuBox.Height - 120), "Save Terrain",
                 new Size(100, 25), null, MenuBox);
+
+            //Top Left title
+            LogoLabel = new Label
+            {
+                Location = new Point(0, 0),
+                Size = new Size(MenuBox.Width, 100),
+                Text = "Procedural Terrain Generator: Mesh Form",
+                Font = new Font("Arial", 13),
+                TextAlign = ContentAlignment.TopCenter,
+            };
+            MenuBox.Controls.Add(LogoLabel);
         }
 
         public async void SaveButtonClick(object sender, EventArgs e)

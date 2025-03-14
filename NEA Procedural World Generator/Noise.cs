@@ -169,7 +169,9 @@ namespace NEA_Procedural_World_Generator
                 frequency *= 2f;//increase frequency for each octave
             }
             //return cumulative noise generated divided by the cumulative total posible 
-            return (noise / max);
+
+            float final = (Form1.UI.IslandNUD.Value == 0) ? noise / max : IslandShaper(x, y, Num_samples, noise / max, (float)Form1.UI.IslandNUD.Value / 10f);
+            return final;
 
         }
         //virtual function for other functions in this class to refer to
@@ -177,6 +179,17 @@ namespace NEA_Procedural_World_Generator
 
         //faster version of Math.floor
         public static int fastfloor(float x) => (x >= 0) ? (int)x : (int)(x - 1);
+
+        //maps the terrain to look more like an island
+        public float IslandShaper(float x, float y, int size, float noiseVal, float intensity)
+        {
+            var xVal = Math.Abs(x * 2f - size) / size;
+            var yVal = Math.Abs(y * 2f - size) / size;
+
+            var GradVal = Math.Max(yVal, xVal);
+
+            return noiseVal - (GradVal * intensity);
+        }
     }
 
     //Generates the permutation table for Perlin/Simplex noise class

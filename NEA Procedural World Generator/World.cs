@@ -107,8 +107,8 @@ namespace NEA_Procedural_World_Generator
 
         public void EditWorld(int x, int y, int radius, float intensity)//split up into other functions//add for zoom
         {
-            x = x / InterfaceHandler.zoom; //adjust for zoom
-            y = y / InterfaceHandler.zoom;
+            x /= InterfaceHandler.zoom; //adjust for zoom
+            y /= InterfaceHandler.zoom;
 
             float offsetx = Form1.xoff * chunkSize;//offsets already account for zoom
             float offsety = Form1.yoff * chunkSize;
