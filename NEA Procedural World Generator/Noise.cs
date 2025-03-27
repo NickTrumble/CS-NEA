@@ -170,7 +170,7 @@ namespace NEA_Procedural_World_Generator
             }
             //return cumulative noise generated divided by the cumulative total posible 
 
-            float final = (Form1.UI.IslandNUD.Value == 0) ? noise / max : IslandShaper(x, y, Num_samples, noise / max, (float)Form1.UI.IslandNUD.Value / 10f);
+            float final = (Form1.UI.IslandNUD.Value == 0) ? noise / max : IslandShaper(noise / max, (float)Form1.UI.IslandNUD.Value);
             return final;
 
         }
@@ -181,14 +181,9 @@ namespace NEA_Procedural_World_Generator
         public static int fastfloor(float x) => (x >= 0) ? (int)x : (int)(x - 1);
 
         //maps the terrain to look more like an island
-        public float IslandShaper(float x, float y, int size, float noiseVal, float intensity)
+        public float IslandShaper(float noiseVal, float intensity)
         {
-            var xVal = Math.Abs(x * 2f - size) / size;
-            var yVal = Math.Abs(y * 2f - size) / size;
-
-            var GradVal = Math.Max(yVal, xVal);
-
-            return noiseVal - (GradVal * intensity);
+            return noiseVal - (intensity / 20f);
         }
     }
 

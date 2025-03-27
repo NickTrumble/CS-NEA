@@ -196,9 +196,8 @@ namespace NEA_Procedural_World_Generator
 
             //Island scaler
             IslandNUD = SliderCreator(new Point(60, MenuBox.Height - 265), T: MenuBox);
-            LabelCreator(new Point(0, MenuBox.Height - 265), "Island Shape:", MenuBox);
+            LabelCreator(new Point(0, MenuBox.Height - 265), "Ocean Val:", MenuBox);
 
-            
         }
         #endregion
 

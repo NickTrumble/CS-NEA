@@ -38,7 +38,7 @@ namespace NEA_Procedural_World_Generator
         //interpolates between base colours in the cmap depending on the noise value
         public static Color Interpolate_value(float noise_value)
         {
-            noise_value = (float)Math.Round(noise_value, 1);
+            noise_value = (float)Math.Round(noise_value, 1);//REMOVE BEFORE SUBMITTING
             if (noise_value < 0.1) // waterd
             {
                 return cmapC[0];

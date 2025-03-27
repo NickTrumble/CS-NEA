@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -102,12 +103,6 @@ namespace NEA_Procedural_World_Generator
                     g.FillPolygon(b, new Point[3] { corners[2], corners[1], corners[3] });
                 }
             }
-        }
-
-        public Color GetColour(int elevation)
-        {
-            int intensity = Math.Min(127, elevation * 13);
-            return Color.FromArgb(2 * intensity, 2 * intensity, 128 + intensity);
         }
     }
 
