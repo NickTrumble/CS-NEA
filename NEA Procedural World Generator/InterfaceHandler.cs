@@ -491,7 +491,7 @@ namespace NEA_Procedural_World_Generator
                 //get block elevation at block hovering over
                 float elevation = Form1.world.WorldChunks[(Math.Min(mousex / World.chunkSize, size - 1), Math.Min(size - 1, mouseu / World.chunkSize))]
                     .ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize, mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
-                MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
+                //MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
             }
 
 
