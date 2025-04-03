@@ -29,17 +29,17 @@ namespace NEA_Procedural_World_Generator
         public async Task SaveAll(string path)//save whole woruld
         {
             row = col = World.Size;
-            ATerrain = World.DictionaryToArray(inTerrain, row, col, 0, 0);
+            ATerrain = World.DictionaryToArray(row, col, 0, 0);
             await Task.Run(() => ExportOBJ(path));
         }
 
         public async Task SaveRegion(int xlow, int ylow, int xhigh, int yhigh, string path)//save region selected
         {
-            inTerrain = (Dictionary<(int x, int y), Chunk>)inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh
-                                                                            && c.Key.y >= ylow && c.Key.y <= yhigh);
+            inTerrain = inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh && c.Key.y >= ylow && c.Key.y <= yhigh)
+                .ToDictionary(c => c.Key, c => c.Value);
             row = xhigh - xlow + 1;
             col = yhigh - ylow + 1;
-            ATerrain = World.DictionaryToArray(inTerrain, row, col, xlow, ylow);
+            ATerrain = World.DictionaryToArray(row, col, xlow, ylow);
             await Task.Run(() => ExportOBJ(path));
         }
 

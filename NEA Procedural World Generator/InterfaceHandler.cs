@@ -45,7 +45,7 @@ namespace NEA_Procedural_World_Generator
         private PointF lastPos;
         private float intensity = 0.03f;
         private int radius = 30;
-
+        private string SavePath;
 
         #endregion
 
@@ -183,11 +183,11 @@ namespace NEA_Procedural_World_Generator
             LabelCreator(new Point(0, MenuBox.Height - 365), "World Size:", MenuBox);
 
             //Scale
-            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 340), 1f, 16f, 0, 8f, 1, MenuBox);
+            ScaleNUD = SliderCreator(new Point(60, MenuBox.Height - 340), 1f, 16f, 0, 6f, 1, MenuBox);
             LabelCreator(new Point(0, MenuBox.Height - 340), "Scale:", MenuBox);
 
             //Octaves
-            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 1f, 10f, 0, 4, 1, MenuBox);
+            OctavesNUD = SliderCreator(new Point(60, MenuBox.Height - 315), 1f, 10f, 0, 8, 1, MenuBox);
             LabelCreator(new Point(0, MenuBox.Height - 315), "Octaves:", MenuBox);
 
             //Persistance
@@ -326,14 +326,17 @@ namespace NEA_Procedural_World_Generator
             {
                 if (filelocation.ShowDialog() == DialogResult.OK)
                 {
+                    SavePath = filelocation.SelectedPath;
                     if (result == DialogResult.Yes)
                     {
 
-                        await exporter.SaveAll(filelocation.SelectedPath);
+                        await exporter.SaveAll(SavePath);
                     }
                     else if (result == DialogResult.No)//choose chunks
                     {
-
+                        Form.Text = "Click one corner of area to save as a mesh:";
+                        MouseMode = MouseState.Saving;
+                        SaveButton.Text = "Cancel";
                     }
                 }
             }
@@ -430,6 +433,14 @@ namespace NEA_Procedural_World_Generator
         #endregion
 
         #region Other Handlers
+        private void TerrainBoxClick(object sender, MouseEventArgs e)
+        {
+            //if edit mode, :
+            intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
+            Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity / 1f);
+            TerrainBox.Invalidate();
+        }
+
         private void TerrainBoxMouseDown(object sender, MouseEventArgs e)
         {
             if (TerrainBox.Contains(StartButton))
@@ -442,10 +453,10 @@ namespace NEA_Procedural_World_Generator
             {
                 //if edit mode, :
                 intensity = (e.Button == MouseButtons.Left) ? intensity : -intensity;
-                Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity / 10f);
+                Form1.world.EditWorld(e.Location.X, e.Location.Y, radius, intensity / 1f);
                 TerrainBox.Invalidate();
             }
-            else if (MouseMode == MouseState.Moving)
+            if (MouseMode == MouseState.Moving)
             {
                 //if move mode, : 
                 lastPos = e.Location;
@@ -491,18 +502,18 @@ namespace NEA_Procedural_World_Generator
                 //get block elevation at block hovering over
                 float elevation = Form1.world.WorldChunks[(Math.Min(mousex / World.chunkSize, size - 1), Math.Min(size - 1, mouseu / World.chunkSize))]
                     .ChunkBlock[(mousex - (mousex / World.chunkSize) * World.chunkSize, mouseu - (mouseu / World.chunkSize) * World.chunkSize)].Z;
-                //MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
+                MousePosLabel.Text = $"[{mousex}, {mouseu}] = {elevation.ToString().Substring(0, Math.Min(4, elevation.ToString().Length))}";
             }
 
 
         }
 
-        private void TerrainBoxMouseUp(object sender, MouseEventArgs e)
+        private async void TerrainBoxMouseUp(object sender, MouseEventArgs e)
         {
             if (MouseMode == MouseState.Editing)
             {
-                Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
-                Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
+                //Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
+                //Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
                 intensity = Math.Abs(intensity);
             }
             else if (MouseMode == MouseState.Selecting)
@@ -513,6 +524,28 @@ namespace NEA_Procedural_World_Generator
                 MeshForm mp = new MeshForm(MeshDrawer, Form);
                 mp.Show();
                 Form.Hide();
+            } else if (MouseMode == MouseState.Saving)
+            {
+
+                OBJExport exporter = new OBJExport(Form1.world, 0.015f);
+
+                (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
+                                               (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
+
+                int W = Math.Abs(SecondCorner.x - CornerChunk.x) + 1;
+                int H = Math.Abs(SecondCorner.y - CornerChunk.y) + 1;
+
+                int xLow = (SecondCorner.x < CornerChunk.x) ? SecondCorner.x : CornerChunk.x;
+                int yLow = (SecondCorner.y < CornerChunk.y) ? SecondCorner.y : CornerChunk.y;
+
+                Form.Text = "Saving Terrain Region...";
+                MouseMode = MouseState.Editing;
+
+                await exporter.SaveRegion(xLow, yLow, xLow + W, yLow + H, SavePath);
+
+                Form.Text = "Procedural Terrain Generator and Editor";
+                SaveButton.Text = "Save Terrain";
+
             }
 
             Drag = DraggingState.None;
