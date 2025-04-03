@@ -19,15 +19,6 @@ namespace NEA_Procedural_World_Generator
         public Stack<List<Chunk>> UndoStack, RedoStack;//holds a non-reference copy of the world chunks before/after editing
         public List<Chunk> temp;//holds last non reference world chunks for undo stack
 
-
-
-
-        //Color.FromArgb(59, 107, 161), Color.FromArgb(232, 235, 56),
-        //    Color.FromArgb(39, 99, 21), Color.FromArgb(88, 57, 39), 
-        //    Color.FromArgb(98, 100, 102)
-
-        //private variables
-
         public World(int size, int octaves, float pers, float scale)
         {
             //assigning basic variables
@@ -52,32 +43,6 @@ namespace NEA_Procedural_World_Generator
             }
 
             
-        }
-
-        //gives a block a block state through biome and height
-        public Block.BlockState BlockStateTransformer(float val)
-        {
-            if (val < 0.3)
-            {
-                return Block.BlockState.Water;
-            }
-            else if (val < 0.6)
-            {
-                return Block.BlockState.Sand;
-            }
-            else if (val < 0.75)
-            {
-                return Block.BlockState.Grass;
-            }
-            else if (val < 0.9)
-            {
-                return Block.BlockState.Dirt;
-            }
-            else
-            {
-                return Block.BlockState.Stone;
-            }
-
         }
 
         public static Color BlockColourTransformer(Block block)
@@ -113,7 +78,7 @@ namespace NEA_Procedural_World_Generator
             float offsetx = Form1.xoff * chunkSize;//offsets already account for zoom
             float offsety = Form1.yoff * chunkSize;
 
-            int clickedx = (int)(x + offsetx);//find the exact coordinate clicked in 1x
+            int clickedx = (int)(x + offsetx);//find the exact coordinate clicked in zoom
 
             int xmin = (int)Math.Max(0, x - radius + offsetx);//find the square encapsulating the circle of influence
             int ymin = (int)Math.Max(0, y - radius + offsety);//topleft corner
@@ -122,30 +87,36 @@ namespace NEA_Procedural_World_Generator
             int ymax = (int)Math.Min(chunkSize * Size, y + radius + offsety);
 
             int radius2 = radius * radius;
+            //loop over all blocks in the square of influence
             Parallel.For(xmin, xmax, i =>
             {
                 for (int j = ymin; j < ymax; j++)
                 {
+                    //compare if block is inside the clicked blocks circle of influence
                     float distance = (float)(Math.Pow(i - x - offsetx, 2) + Math.Pow(j - y - offsety, 2));
                     if (distance < radius2)
                     {
+                        //inverse square law to make a more natural fall off
                         float incVal = intensity * (1 - (distance / radius2));
+                        //finds chunk of block
                         int X = Math.Min(i / chunkSize, Size - 1);
                         int Y = Math.Min(j / chunkSize, Size - 1);
 
                         //get chunk reference
                         Chunk chunk = Form1.world.WorldChunks[(X, Y)];
-                        //get block reference
+                        //get block position in chunk
                         int blockx = i % chunkSize;
                         int blocky = j % chunkSize;
-                        Block block = chunk.ChunkBlock[(blockx, blocky)];
-                        block.Z += incVal;
 
-                        //edit block state and colour
-                        block.BlockType = BlockStateTransformer(block.Z);
-                        Color c = BlockColourTransformer(chunk.ChunkBlock[(blockx, blocky)]);
+                        //find block reference
+                        Block block = chunk.ChunkBlock[(blockx, blocky)];
+                        //increase elevation by inverse square law
+                        block.Z += incVal;
+                        //get new colour for chunk bitmap
+                        Color c = BlockColourTransformer(block);
 
                         //set pixel colour//update to faster version if possible
+                        //lock bitmap due for threadsafety during parallel processing
                         lock (chunk.Bmp)
                         {
                             chunk.Bmp.SetPixel(blockx, blocky, c);
@@ -159,9 +130,12 @@ namespace NEA_Procedural_World_Generator
 
         }
 
+        //Clones the world without reference 
         public static List<Chunk> CloneWorld(List<Chunk> world)
         {
+            //creates a new list of chunkns to replace WorldChunks
             List<Chunk> Cloned = new List<Chunk>();
+            //loop over all the chunks and call the ICloneable Method
             foreach (Chunk c in world)
             {
                 Cloned.Add((Chunk)((ICloneable)c).Clone());
@@ -169,13 +143,16 @@ namespace NEA_Procedural_World_Generator
             return Cloned;
         }
 
+        //converts dictionaries like WorldChunks to an array
         public float[,] DictionaryToArray(int row, int col, int xoffset, int yoffset)
         {
+            //widht and height of terrain in blocks, chunks * chunksize
             int width = row * chunkSize;
             int height = col * chunkSize;
-
-
+            
+            //array holding the new data
             float[,] newA = new float[width, height];
+            //loop over blocks in a heirarchy: chunk x and y -> block x and y
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < col; j++)
@@ -184,6 +161,7 @@ namespace NEA_Procedural_World_Generator
                     {
                         for (int l = 0; l < chunkSize; l++)
                         {
+                            //populates new array with old data
                             newA[i * chunkSize + k, j * chunkSize + l] = WorldChunks[(i + xoffset, j + yoffset)].ChunkBlock[(k, l)].Z;
                         }
                     }
@@ -197,37 +175,36 @@ namespace NEA_Procedural_World_Generator
     public class Chunk : ICloneable
     {
         //public variables
-        public Dictionary<(int x, int y), Block> ChunkBlock;
+        public Dictionary<(int x, int y), Block> ChunkBlock;//holds all block data in the chunk
+        //coordinates of the chunk
         public int X;
         public int Y;
+        //bitmap of the chunk
         public Bitmap Bmp;
-
-        //private variables
-        private Random rnd = new Random();
 
         public Chunk(int x, int y)
         {
+            //initialise and assign basic internal variables
             ChunkBlock = new Dictionary<(int x, int y), Block>();
+            Bmp = new Bitmap(World.chunkSize, World.chunkSize);
             X = x;
             Y = y;
-            Bmp = new Bitmap(World.chunkSize, World.chunkSize);
         }
 
+        //generate nosie values for all blocks in inputted chunk
         public static Chunk ChunkGeneration(Chunk chunk)
         {
+            //frequency to pass into noise methods
             float freq = Form1.world.Scale;
-            
+            //iterate over all blocks to put into noise functions
             for (int i = 0; i < World.chunkSize; i++)
             {
                 for (int j = 0; j < World.chunkSize; j++)
                 {
-
+                    //calculates the noise value for specific block,
                     float noisevalue = Math.Min(1, 0.5f + Form1.world.Noise.Noise_method((chunk.X * World.chunkSize + i) * freq, (chunk.Y * World.chunkSize + j) * freq));
                     chunk.ChunkBlock[(i, j)] = new Block(i, j);
                     chunk.ChunkBlock[(i, j)].Z = noisevalue;
-
-                    Block.BlockState state = Form1.world.BlockStateTransformer(noisevalue);
-                    chunk.ChunkBlock[(i, j)].BlockType = state;
 
                     chunk.Bmp.SetPixel(i, j, World.BlockColourTransformer(chunk.ChunkBlock[(i, j)]));
 
@@ -263,22 +240,12 @@ namespace NEA_Procedural_World_Generator
     public class Block : ICloneable
     {
         //public variables
-        //enums
-        public enum BlockState { Water, Sand, Grass, Dirt, Stone }
-        public enum BiomeState { Desert, Plains, Mountains }//add biomes
-
-        public BlockState BlockType;
-        public BiomeState Biome;
-
         public int X;
         public int Y;
         public float Z;
-        //private variables
 
         public Block(int x, int y)
         {
-            BlockType = BlockState.Water;
-            Biome = BiomeState.Plains;
             X = x;
             Y = y;
         }
@@ -288,8 +255,6 @@ namespace NEA_Procedural_World_Generator
             return new Block(X, Y)
             {
                 Z = this.Z,
-                BlockType = this.BlockType,
-                Biome = this.Biome
             };
         }
 

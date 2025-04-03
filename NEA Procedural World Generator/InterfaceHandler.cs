@@ -312,7 +312,7 @@ namespace NEA_Procedural_World_Generator
 
         public async void SaveButtonClick(object sender, EventArgs e)
         {
-            OBJExport exporter = new OBJExport(Form1.world, 0.015f);
+            OBJExport exporter = new OBJExport(Form1.world, 130);
             DialogResult result = MessageBox.Show(
                 "Would you like to Save the whole Map?",
                 "Save Terrain As...", MessageBoxButtons.YesNoCancel);
