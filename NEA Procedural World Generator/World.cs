@@ -129,7 +129,7 @@ namespace NEA_Procedural_World_Generator
                     float distance = (float)(Math.Pow(i - x - offsetx, 2) + Math.Pow(j - y - offsety, 2));
                     if (distance < radius2)
                     {
-                        float incVal = intensity * (1 - (distance / (radius2)));
+                        float incVal = intensity * (1 - (distance / radius2));
                         int X = Math.Min(i / chunkSize, Size - 1);
                         int Y = Math.Min(j / chunkSize, Size - 1);
 
