@@ -76,9 +76,9 @@ namespace NEA_Procedural_World_Generator
             {
                 for (int j = 0; j < worldcol - 2; j++)
                 {
-                    int tl = i * worldrow + j + 1;
+                    int tl = i * worldcol + j + 1;
                     int tr = tl + 1;
-                    int bl = tl + worldrow;
+                    int bl = tl + worldcol;
                     int br = bl + 1;
                     faces.Add((tl, tr, br));
                     faces.Add((tl, br, bl));
@@ -93,6 +93,7 @@ namespace NEA_Procedural_World_Generator
             int multiplyer = 2;
             List<(float, float, float)> vertices = Generate_vertices();
             List<(int, int, int)> faces = Gen_faces();
+            MessageBox.Show($"Vertices:{vertices.Count}, Faces:{faces.Count}");
             switch (InterfaceHandler.FileType)
             {
                 case InterfaceHandler.SaveFileType.OBJ://obj
