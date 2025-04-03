@@ -169,7 +169,7 @@ namespace NEA_Procedural_World_Generator
             return Cloned;
         }
 
-        public float[,] DictionaryToArray(Dictionary<(int, int), Chunk> inD, int row, int col, int xoffset, int yoffset)
+        public float[,] DictionaryToArray(int row, int col, int xoffset, int yoffset)
         {
             int width = row * chunkSize;
             int height = col * chunkSize;

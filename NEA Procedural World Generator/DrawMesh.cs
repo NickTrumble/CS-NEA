@@ -28,7 +28,7 @@ namespace NEA_Procedural_World_Generator
             row = xHigh - xLow + 1;
             col = yHigh - yLow + 1;
             inWorld = world;
-            heightmap = inWorld.DictionaryToArray(inWorld.WorldChunks, row, col, xlow, ylow);
+            heightmap = world.DictionaryToArray(row, col, xlow, ylow);
 
             tilewidth = Form1.UI.TerrainBox.Width / heightmap.GetLength(0);
             tileheight = Form1.UI.TerrainBox.Height / heightmap.GetLength(1);
