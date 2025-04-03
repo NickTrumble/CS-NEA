@@ -75,9 +75,9 @@ namespace NEA_Procedural_World_Generator
                 for (int j = 0; j < worldcol; j++)
                 {
                     //create a vertice from the x, y, and z
-                    float x = i;
-                    float y = ATerrain[i, j] * MeshScale;//multiplied by scale to give it more volume
-                    float z = j;
+                    float x = i / MeshScale;//divided by meshscale to scale down, similar to y
+                    float y = ATerrain[i, j];
+                    float z = j / MeshScale;
                     //add vertiecs to list
                     vertices.Add((x, y, z));
                 }

@@ -138,7 +138,8 @@ namespace NEA_Procedural_World_Generator
             //loop over all the chunks and call the ICloneable Method
             foreach (Chunk c in world)
             {
-                Cloned.Add((Chunk)((ICloneable)c).Clone());
+                //clone each chunk then add to new list
+                Cloned.Add(c.Clone());
             }
             return Cloned;
         }
@@ -172,7 +173,7 @@ namespace NEA_Procedural_World_Generator
     }
 
     //class to handle chunks of the world to generate easier
-    public class Chunk : ICloneable
+    public class Chunk
     {
         //public variables
         public Dictionary<(int x, int y), Block> ChunkBlock;//holds all block data in the chunk
@@ -203,9 +204,10 @@ namespace NEA_Procedural_World_Generator
                 {
                     //calculates the noise value for specific block,
                     float noisevalue = Math.Min(1, 0.5f + Form1.world.Noise.Noise_method((chunk.X * World.chunkSize + i) * freq, (chunk.Y * World.chunkSize + j) * freq));
+                    //declare new block at i, j, where elevation = noise value
                     chunk.ChunkBlock[(i, j)] = new Block(i, j);
                     chunk.ChunkBlock[(i, j)].Z = noisevalue;
-
+                    //udpate the bitmap with the new value
                     chunk.Bmp.SetPixel(i, j, World.BlockColourTransformer(chunk.ChunkBlock[(i, j)]));
 
                     if (noisevalue < World.min)
@@ -215,29 +217,30 @@ namespace NEA_Procedural_World_Generator
                     if (noisevalue > World.max)
                     {
                         World.max = noisevalue;
-                    }//used for debugging
+                    }//used for debugging//remove
                 }
 
             }
             return chunk;
 
         }
-
-        object ICloneable.Clone()
+        //copy each blockk in tthe chunk and return
+        public Chunk Clone()
         {
+            //generate the new chunk
             Chunk chunk = new Chunk(X, Y);
-            chunk.Bmp = new Bitmap(this.Bmp);
+            chunk.Bmp = new Bitmap(this.Bmp);//clone the bitmap
             foreach (var block in ChunkBlock)
             {
-                chunk.ChunkBlock[block.Key] = (Block)block.Value.Clone();
+                //copy values of elevation for the blocks over
+                chunk.ChunkBlock[block.Key] = block.Value.Clone();
             }
             return chunk;
         }
-
     }
 
     //class to handle all block properties
-    public class Block : ICloneable
+    public class Block
     {
         //public variables
         public int X;
@@ -250,15 +253,13 @@ namespace NEA_Procedural_World_Generator
             Y = y;
         }
 
-        public object Clone()
+        public Block Clone()
         {
             return new Block(X, Y)
             {
                 Z = this.Z,
             };
         }
-
-
     }
 
 

@@ -512,8 +512,8 @@ namespace NEA_Procedural_World_Generator
         {
             if (MouseMode == MouseState.Editing)
             {
-                //Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
-                //Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
+                Form1.world.UndoStack.Push(World.CloneWorld(Form1.world.temp));//undo stack.push -> temp.clone
+                Form1.world.temp = World.CloneWorld(Form1.world.WorldChunks.Values.ToList()); //temp = current world,clone
                 intensity = Math.Abs(intensity);
             }
             else if (MouseMode == MouseState.Selecting)
@@ -527,7 +527,7 @@ namespace NEA_Procedural_World_Generator
             } else if (MouseMode == MouseState.Saving)
             {
 
-                OBJExport exporter = new OBJExport(Form1.world, 0.015f);
+                OBJExport exporter = new OBJExport(Form1.world, 130);//fix exp[orting region region
 
                 (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
                                                (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
