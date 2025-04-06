@@ -12,12 +12,15 @@ namespace NEA_Procedural_World_Generator
     {
         //public variables
         public Dictionary<(int x, int y), Chunk> WorldChunks;//contains a list of world chunks and their coordinates
-        public int Size, Octaves;
-        public BaseNoise Noise;
-        public static int chunkSize = 32;
-        public float Persistance, Scale;
         public Stack<List<Chunk>> UndoStack, RedoStack;//holds a non-reference copy of the world chunks before/after editing
         public List<Chunk> temp;//holds last non reference world chunks for undo stack
+        public BaseNoise Noise;//Noise class to call noise generation function
+
+        //Persistence: how much each layer of fractal noise affects the original (roughness)
+        //Scale: how zoomed in the original 1x zoom verison of the terrain appears
+        public float Persistance, Scale;
+        public int Size, Octaves;//Size of world in chunks, and amount of layers the fractal noise will 
+        public static int chunkSize = 32;//how many blocks wide and tall the chunks are
 
         public World(int size, int octaves, float pers, float scale)
         {
@@ -45,47 +48,57 @@ namespace NEA_Procedural_World_Generator
             
         }
 
+        //returns a colour value based on the elevation of the block entered
         public static Color BlockColourTransformer(Block block)
         {
             return TerrainCmap.Interpolate_value(block.Z);
         }
 
-        public static float min = 1;
-        public static float max = -1;
-
+        //generates noise value for every block in every chunk
         public void WorldGeneration()
         {
-            List<Chunk> chunks = new List<Chunk>();
+            //iterate over each of the chunks in the world
             for (int i = 0; i < Form1.world.Size; i++)
             {
                 for (int j = 0; j < Form1.world.Size; j++)
                 {
+                    //populate the chunk at [i,j]
                     Chunk c = Chunk.ChunkGeneration(new Chunk(i, j));
+                    //assign new chunk to world chunks
                     WorldChunks[(i, j)] = c;
-                    chunks.Add(c);
                 }
 
             }
+            //create a copy of the original world to use for the undo button
             temp = CloneWorld(WorldChunks.Values.ToList());
+            //call paint event for terrain box
             Form1.UI.TerrainBox.Invalidate();
         }
 
-        public void EditWorld(int x, int y, int radius, float intensity)//split up into other functions//add for zoom
+        //edits the chunks that are influenced when the terrain is edited
+        public void EditWorld(int x, int y, int radius, float intensity)
         {
-            x /= InterfaceHandler.zoom; //adjust for zoom
+            //adjust input coordinates for zoom
+            x /= InterfaceHandler.zoom; 
             y /= InterfaceHandler.zoom;
 
-            float offsetx = Form1.xoff * chunkSize;//offsets already account for zoom
+            //find offset in chunks, offsets already accounting for zoom
+            float offsetx = Form1.xoff * chunkSize;
             float offsety = Form1.yoff * chunkSize;
 
-            int clickedx = (int)(x + offsetx);//find the exact coordinate clicked in zoom
+            //find the exact coordinate clicked in zoom
+            int clickedx = (int)(x + offsetx);
 
-            int xmin = (int)Math.Max(0, x - radius + offsetx);//find the square encapsulating the circle of influence
-            int ymin = (int)Math.Max(0, y - radius + offsety);//topleft corner
-
-            int xmax = (int)Math.Min(chunkSize * Size, x + radius + offsetx);//bottom right corner
+            //find the square encapsulating the circle of influence
+            //topleft corner, lower bound
+            int xmin = (int)Math.Max(0, x - radius + offsetx);
+            int ymin = (int)Math.Max(0, y - radius + offsety);
+            
+            //bottom right corner, upper bound
+            int xmax = (int)Math.Min(chunkSize * Size, x + radius + offsetx);
             int ymax = (int)Math.Min(chunkSize * Size, y + radius + offsety);
 
+            //radius squared used to compare to distance to reduce resources
             int radius2 = radius * radius;
             //loop over all blocks in the square of influence
             Parallel.For(xmin, xmax, i =>
@@ -209,15 +222,6 @@ namespace NEA_Procedural_World_Generator
                     chunk.ChunkBlock[(i, j)].Z = noisevalue;
                     //udpate the bitmap with the new value
                     chunk.Bmp.SetPixel(i, j, World.BlockColourTransformer(chunk.ChunkBlock[(i, j)]));
-
-                    if (noisevalue < World.min)
-                    {
-                        World.min = noisevalue;
-                    }
-                    if (noisevalue > World.max)
-                    {
-                        World.max = noisevalue;
-                    }//used for debugging//remove
                 }
 
             }
@@ -243,18 +247,22 @@ namespace NEA_Procedural_World_Generator
     public class Block
     {
         //public variables
+        //block cooridnates
         public int X;
         public int Y;
+        //block elevation
         public float Z;
 
         public Block(int x, int y)
         {
+            //assign basic variables
             X = x;
             Y = y;
         }
 
         public Block Clone()
         {
+            //create non-reference block with the same elevation
             return new Block(X, Y)
             {
                 Z = this.Z,

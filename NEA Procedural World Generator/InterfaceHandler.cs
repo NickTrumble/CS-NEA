@@ -14,8 +14,12 @@ namespace NEA_Procedural_World_Generator
 
         #region variables
         //public enumerators
+        //determines what file format the program saves the mesh in
         public enum SaveFileType { OBJ, PLY }
+        //determines what noise generation algorithm the program uses next time the 
+        //user genernates new terrain
         public enum NoiseState { Perlin, Simplex }
+        //determineds what to do when the mouse is moving
         public enum MouseState { Nothing, Editing, Moving, Selecting, Saving }
         public enum DraggingState { None, Dragging }
 
