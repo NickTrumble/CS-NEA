@@ -11,7 +11,6 @@ namespace NEA_Procedural_World_Generator
     {
 
         //public variables
-        public Dictionary<(int x, int y), Chunk> inTerrain;//Terrain as a dictionary inputted from the Main Form
         public World World;//World inputted from the Main Form
         public static string FileName = "TerrainMesh";//Stores the file name, defaukt is "TerrainMesh"
         public int row;//how many rows long the terrain is after being cropped
@@ -24,7 +23,6 @@ namespace NEA_Procedural_World_Generator
         {
             //Store inputted variables as their internal corresponding variables
             World = inworld;
-            inTerrain = World.WorldChunks;
             MeshScale = Meshscale;
         }
 
@@ -45,13 +43,9 @@ namespace NEA_Procedural_World_Generator
         //async to call the await async function
         public async Task SaveRegion(int xlow, int ylow, int xhigh, int yhigh, string path)//save region selected
         {
-            //crops the terrain by using LINQ to get rid of the values outside the boudaries
-            //then converting back into a dicitonary otherwise will be in a weird LINQ format
-            inTerrain = inTerrain.Where(c => c.Key.x >= xlow && c.Key.x <= xhigh && c.Key.y >= ylow && c.Key.y <= yhigh)
-                .ToDictionary(c => c.Key, c => c.Value);
             //region width and height, +1 for the inclusive part, e.g. chunk 0 to chunk 0 is 1 wide
-            row = xhigh - xlow + 1;
-            col = yhigh - ylow + 1;
+            row = xhigh - xlow;
+            col = yhigh - ylow;
             //convert the whole world into cropped terrain with new boundaries
             ATerrain = World.DictionaryToArray(row, col, xlow, ylow);
             //await allows the program to stay running while the task is executed

@@ -167,9 +167,10 @@ namespace NEA_Procedural_World_Generator
             //array holding the new data
             float[,] newA = new float[width, height];
             //loop over blocks in a heirarchy: chunk x and y -> block x and y
-            for (int i = 0; i < row; i++)
+            //chunks go from offset to offset + row or col - 1
+            for (int i = 0; i < row; i++)//0 to row - 1
             {
-                for (int j = 0; j < col; j++)
+                for (int j = 0; j < col; j++)//0 to col - 1
                 {
                     for (int k = 0; k < chunkSize; k++)
                     {

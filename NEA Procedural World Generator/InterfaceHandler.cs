@@ -468,8 +468,8 @@ namespace NEA_Procedural_World_Generator
             }
             else
             {
-                CornerChunk = ((int)(e.X + Form1.xoff * World.chunkSize) / World.chunkSize,
-                               (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
+                CornerChunk = ((int)Math.Floor(e.X / zoom + Form1.xoff * World.chunkSize) / World.chunkSize,
+                               (int)Math.Floor(e.Y / zoom + (Form1.yoff * World.chunkSize)) / World.chunkSize);
             }
             Drag = DraggingState.Dragging;
         }
@@ -533,8 +533,8 @@ namespace NEA_Procedural_World_Generator
 
                 OBJExport exporter = new OBJExport(Form1.world, 130);//fix exp[orting region region
 
-                (int x, int y) SecondCorner = ((int)(e.X + (Form1.xoff * World.chunkSize)) / World.chunkSize,
-                                               (int)(e.Y + (Form1.yoff * World.chunkSize)) / World.chunkSize);
+                (int x, int y) SecondCorner = ((int)Math.Floor(e.X / zoom + (Form1.xoff * World.chunkSize)) / World.chunkSize,
+                                               (int)Math.Floor(e.Y / zoom + (Form1.yoff * World.chunkSize)) / World.chunkSize);
 
                 int W = Math.Abs(SecondCorner.x - CornerChunk.x) + 1;
                 int H = Math.Abs(SecondCorner.y - CornerChunk.y) + 1;
@@ -606,6 +606,8 @@ namespace NEA_Procedural_World_Generator
                         lock (bmp)
                         {
                             e.Graphics.DrawImage(bmp, World.chunkSize * (i - Form1.xoff) * zoom, World.chunkSize * (j - Form1.yoff) * zoom,
+                                (0.5f + World.chunkSize) * zoom, (0.5f + World.chunkSize) * zoom);
+                            e.Graphics.DrawRectangle(Pens.Black, World.chunkSize * (i - Form1.xoff) * zoom, World.chunkSize * (j - Form1.yoff) * zoom,
                                 (0.5f + World.chunkSize) * zoom, (0.5f + World.chunkSize) * zoom);
                         }
 
