@@ -11,27 +11,32 @@ namespace NEA_Procedural_World_Generator
     public partial class Form1 : Form
     {
         //public variables
-        public static InterfaceHandler UI;
+        public static InterfaceHandler UI;//user interface class instance
+        //offsets for terrain 
         public static float xoff = 0;
         public static float yoff = 0;
+        //only world initialised
         public static World world;
+        //tells the program if a world has been generated
         public static bool Started = false;
 
-
-        //private variables
+        //constructor
         public Form1(World inWorld = null)
         {
-            
             InitializeComponent();
+            //checks for world inputted from other form
             if (inWorld != null)
             {
                 world = inWorld;
             }
+
+            //reinitiallises terrain
             UI = new InterfaceHandler(this);
 
             this.Resize += FormResize;
         }
 
+        //updates UI size on form resize
         public void FormResize(object sender, EventArgs e)
         {
             UI.width = this.Width;
@@ -45,11 +50,3 @@ namespace NEA_Procedural_World_Generator
         }
     }
 }
-//GOALS
-//add to mesh form (terracing)(more buttons)
-//mass optimisation
-//save options e.g.Colour?    
-//smaller worlds
-//add island slider /find old version
-//add numbers to objectives
-//adjust colours / bounds

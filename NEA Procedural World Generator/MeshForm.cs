@@ -130,29 +130,36 @@ namespace NEA_Procedural_World_Generator
         #endregion
         #region button clicks
 
+        //Allows the user to save the terrain from the mesh form
         public async void SaveButtonClick(object sender, EventArgs e)
         {
-            OBJExport Exporter = new OBJExport(MeshDrawer.inWorld, 0.015f);
+            //new instance of OBJExporter
+            OBJExport Exporter = new OBJExport(MeshDrawer.inWorld, 130f);
+            //gets the directory path
             FolderBrowserDialog filelocation = new FolderBrowserDialog
             {
                 Description = "Save Terrain at...",
                 SelectedPath = "C:\\Users\\iantr\\source\\repos\\NEA Procedural World Generator\\NEA Procedural World Generator"
             };
 
-            if (filelocation.ShowDialog() == DialogResult.OK)
+            if (filelocation.ShowDialog() == DialogResult.OK)//once the user selects a path...
             {
+                //saves entire terrain instance was initialised with, which is the mesh terrain
                 await Exporter.SaveAll(filelocation.SelectedPath);
             }
-            
         }
 
+        //takes user back to home form
         public void BackButtonPress(object sender, EventArgs e)
         {
+            //loads the home form with the world given to mesh form to restore world
             Form1 form = new Form1(Form1.world);
-            form.Show();
-            this.Hide();
+            form.Show();//show main form
+            Form1.UI.StartButtonClick(sender, e);//skip the load world screen
+            this.Hide();//hide this form
         }
 
+        //show settings form
         public void SettingsButtonClick(object sender, EventArgs e)
         {
             SettingsForm Settingform = new SettingsForm(this);
@@ -161,12 +168,13 @@ namespace NEA_Procedural_World_Generator
 
         #endregion
         #region rotation
+        //redraws terrain after rotation numeric updown angle is changed
         public void RotationNUDUpdate(object sender, EventArgs e)
         {
             RotationSlider.Value = (int)RotationZNUD.Value;
             TerrainBox.Invalidate();
         }
-
+        //redraws terrain after rotation slider angle is changed
         public void RotationSliderUpdate(object sender, EventArgs e)
         {
             RotationZNUD.Value = RotationSlider.Value;
@@ -176,30 +184,35 @@ namespace NEA_Procedural_World_Generator
         #endregion
         #region terrain box
 
+        //main picturebox paint event
         private void TerrainBox_Paint(object sender, PaintEventArgs e)
         {
-
+            //if grid view box checked, draw grid view underneath
             if (GridViewBox.Checked)
             {
+                //create rotation matrix
                 Matrix3x2 rMatrix = Matrix3x2.CreateRotation((float)((int)RotationZNUD.Value * Math.PI / 180));
 
+                //calculates step between each square to show 20 squares
                 float stepx = MeshDrawer.heightmap.GetLength(0) / 20f;
                 float stepy = MeshDrawer.heightmap.GetLength(1) / 20f;
                 for (int i = 0; i <= 20; i++)
                 {
+                    //calculates points of either end of the grid
                     PointF p1 = MeshDrawer.PointCalc(new Vector3(i * stepx, 0, 0), rMatrix);
                     PointF p2 = MeshDrawer.PointCalc(new Vector3(i * stepx, 0, 20 * stepy), rMatrix);
                     PointF p3 = MeshDrawer.PointCalc(new Vector3(0, 0, i * stepy), rMatrix);
                     PointF p4 = MeshDrawer.PointCalc(new Vector3(20 * stepx, 0, i * stepy), rMatrix);
-
+                    //draws grid
                     e.Graphics.DrawLine(Pens.Black, p1, p2);
                     e.Graphics.DrawLine(Pens.Black, p3, p4);
                 }
             }
-
+            //redraws the terrain
             MeshDrawer.Draw(e.Graphics, (int)RotationZNUD.Value);
         }
 
+        //tells the program to move the mesh when mouse is moved
         public void TerrainBoxMouseDown(object sender, MouseEventArgs e)
         {
             clicked = true;
@@ -208,20 +221,25 @@ namespace NEA_Procedural_World_Generator
 
         public void TerrainBoxMouseMove(object sender, MouseEventArgs e)
         {
+            //if mouse is being clicked
             if (clicked)
             {
+                //finds the difference in pixels between last mouse pos and now
                 decimal differencez = (e.Location.X - lastClicked.X);
+                //update the up and down values
                 RotationZNUD.Value = Math.Max(0, Math.Min((RotationZNUD.Value - differencez), 175));
+                //update the last clicked location 
                 lastClicked = e.Location;
-            }
-
-            
+            }           
         }
 
+        //stops the program from moving the mesh
         public void TerrainBoxMouseUp(object sender, MouseEventArgs e)
         {
             clicked = false;
+            //moves the mesh one last time
             int differencez = (e.Location.X - lastClicked.X) / 2;
+            //% to keep the value in range
             RotationZNUD.Value = (RotationZNUD.Value - differencez + 175) % 175;
 
         }
