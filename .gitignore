@@ -9,3 +9,8 @@
 
 #ignore silly little files
 .vs/
+.idea/
+bin/
+obj/
+*.user
+*.suo
